@@ -1,0 +1,63 @@
+# Copyright (C) 2022 - present Juergen Zimmermann, Hochschule Karlsruhe
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Aufruf:   docker compose up
+#           docker compose down
+
+#   docker compose exec oracle bash
+#   docker compose exec --interactive --tty oracle sqlplus sys/p@XE as sysdba
+#   docker compose exec --interactive --tty oracle sqlplus system/p@XE
+#   docker compose exec --interactive --tty oracle sqlplus kunde/p@XE
+#   /opt/oracle/product/21c/dbhomeXE/bin/sqlplus
+
+# https://docs.docker.com/compose/compose-file
+# https://docs.docker.com/compose/compose-file/compose-file-v3
+services:
+  oracle:
+    image: container-registry.oracle.com/database/express
+    #image: gvenzl/oracle-xe:21.3.0
+    ports:
+      - published: 1521
+        target: 1521
+      # Oracle Enterprise Manager = OEM
+      # SELECT dbms_xdb_config.getHttpsPort() FROM dual;
+      - published: 5500
+        target: 5500
+    volumes:
+      - type: bind
+        source: C:/Zimmermann/volumes/oracle/oradata
+        target: /opt/oracle/oradata
+      - type: bind
+        source: C:/Zimmermann/volumes/oracle/sql
+        target: /sql
+    env_file: [oracle.env]
+    # /opt/oracle/runOracle.sh kann nur von root aufgerufen werden
+    # user: oracle
+    container_name: oracle
+    # gleicher Name wie der Kubernetes-Service
+    hostname: oracle
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2048M
+    healthcheck:
+      # /opt/oracle/healthcheck.sh
+      # https://stackoverflow.com/questions/50217637/how-do-i-check-if-oracle-is-up-in-docker
+      test: ["CMD", "bash", "-c", "healthcheck.sh"]
+      #test: ["CMD", "bash", "-c", "echo 'SELECT 1 FROM dual;' | sqlplus sys/p@XE as sysdba"]
+      interval: 120s
+      timeout: 5s
+      start_period: 15s
