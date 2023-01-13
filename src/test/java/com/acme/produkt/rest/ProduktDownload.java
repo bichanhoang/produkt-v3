@@ -16,19 +16,16 @@
  */
 package com.acme.produkt.rest;
 
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.service.annotation.GetExchange;
-import org.springframework.web.service.annotation.HttpExchange;
-import reactor.core.publisher.Mono;
+import java.net.URL;
+import java.time.LocalDate;
 
-@HttpExchange("")
-@SuppressWarnings("WriteTag")
-interface KundeRepository {
-    @GetExchange("/{id}")
-    Mono<KundeDownload> getKunde(@PathVariable String id);
-
-    @GetExchange("")
-    Mono<KundenDownload> getKunden(@RequestParam MultiValueMap<String, String> suchkriterien);
+@SuppressWarnings({"RecordComponentNumber", "WriteTag"})
+record ProduktDownload(
+    String name,
+    LocalDate erscheinungsdatum,
+    URL homepage,
+    UmsatzDTO umsatz,
+    @SuppressWarnings("RecordComponentName")
+    Links _links
+) {
 }

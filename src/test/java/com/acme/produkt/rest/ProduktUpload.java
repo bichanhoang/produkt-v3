@@ -16,6 +16,14 @@
  */
 package com.acme.produkt.rest;
 
-@SuppressWarnings({"WriteTag", "RecordComponentName"})
-record KundenDownload(KundeDownloadList _embedded) {
+import java.net.URL;
+import java.time.LocalDate;
+
+@SuppressWarnings({"WriteTag", "RecordComponentNumber"})
+record ProduktUpload(
+    String name,
+    LocalDate erscheinungsdatum,
+    URL homepage,
+    Umsatz umsatz
+) {
 }

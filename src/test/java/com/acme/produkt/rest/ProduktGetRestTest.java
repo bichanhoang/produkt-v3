@@ -16,12 +16,9 @@
  */
 package com.acme.produkt.rest;
 
-import com.acme.produkt.entity.FamilienstandType;
-import com.acme.produkt.entity.GeschlechtType;
-import com.acme.produkt.entity.InteresseType;
 import com.jayway.jsonpath.JsonPath;
 import java.util.Arrays;
-import java.util.List;
+
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -50,7 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import static com.acme.produkt.dev.DevConfig.DEV;
 import static com.acme.produkt.entity.Produkt.NAME_PATTERN;
-import static com.acme.produkt.rest.KundeGetController.REST_PATH;
+import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.condition.JRE.JAVA_19;
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
@@ -59,8 +56,6 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NOT_MODIFIED;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 @Tag("integration")
 @Tag("rest")
@@ -74,44 +69,29 @@ import static org.springframework.web.reactive.function.client.ExchangeFilterFun
 class ProduktGetRestTest {
     static final String SCHEMA = "http";
     static final String HOST = "localhost";
-    static final String USER_ADMIN = "admin";
-    static final String PASSWORD = "p";
-    private static final String USER_KUNDE = "alpha";
-    private static final String PASSWORD_FALSCH = "Falsches Passwort!";
 
     private static final String ID_VORHANDEN = "00000000-0000-0000-0000-000000000001";
-    private static final String ID_VORHANDEN_KUNDE = "00000000-0000-0000-0000-000000000001";
-    private static final String ID_VORHANDEN_ANDERER_KUNDE = "00000000-0000-0000-0000-000000000002";
+    private static final String ID_VORHANDEN_PRODUKT = "00000000-0000-0000-0000-000000000001";
+    private static final String ID_VORHANDEN_ANDERES_PRODUKT = "00000000-0000-0000-0000-000000000002";
     private static final String ID_NICHT_VORHANDEN = "ffffffff-ffff-ffff-ffff-ffffffffffff";
 
-    private static final String NACHNAME_TEIL = "a";
-    private static final String EMAIL_VORHANDEN = "alpha@acme.de";
-    private static final String PLZ_VORHANDEN = "1";
-    private static final String WEIBLICH = "W";
-    private static final String VERHEIRATET = "VH";
-    private static final String LESEN = "L";
-    private static final String REISEN = "R";
-    private static final String NACHNAME_PREFIX_A = "A";
-    private static final String NACHNAME_PREFIX_D = "D";
+    private static final String NAME_TEIL = "a";
+    private static final String NAME_PREFIX_A = "A";
+    private static final String NAME_PREFIX_D = "D";
 
     private static final String ID_PATH = "/{id}";
-    private static final String NACHNAME_PARAM = "nachname";
-    private static final String EMAIL_PARAM = "email";
-    private static final String PLZ_PARAM = "plz";
-    private static final String GESCHLECHT_PARAM = "geschlecht";
-    private static final String FAMILIENSTAND_PARAM = "familienstand";
-    private static final String INTERESSE_PARAM = "interesse";
+    private static final String NAME_PARAM = "name";
 
     private final String baseUrl;
     private final WebClient client;
-    private final WebClient clientKunde;
-    private final KundeRepository kundeRepo;
+    private final WebClient clientProdukt;
+    private final ProduktRepository produktRepo;
 
     @InjectSoftAssertions
     private SoftAssertions softly;
 
     ProduktGetRestTest(@LocalServerPort final int port, final ApplicationContext ctx) {
-        final var getController = ctx.getBean(KundeGetController.class);
+        final var getController = ctx.getBean(ProduktGetController.class);
         assertThat(getController).isNotNull();
 
         final var uriComponents = UriComponentsBuilder.newInstance()
@@ -123,19 +103,17 @@ class ProduktGetRestTest {
         baseUrl = uriComponents.toUriString();
         client = WebClient
             .builder()
-            .filter(basicAuthentication(USER_ADMIN, PASSWORD))
             .baseUrl(baseUrl)
             .build();
-        clientKunde = WebClient
+        clientProdukt = WebClient
             .builder()
-            .filter(basicAuthentication(USER_KUNDE, PASSWORD))
             .baseUrl(baseUrl)
             .build();
         final var clientAdapter = WebClientAdapter.forClient(client);
         final var proxyFactory = HttpServiceProxyFactory
             .builder(clientAdapter)
             .build();
-        kundeRepo = proxyFactory.createClient(KundeRepository.class);
+        produktRepo = proxyFactory.createClient(ProduktRepository.class);
     }
 
     @Test
@@ -153,97 +131,69 @@ class ProduktGetRestTest {
     }
 
     @Test
-    @DisplayName("Suche nach allen Kunden")
+    @DisplayName("Suche nach allen Produkten")
     @SuppressWarnings("DataFlowIssue")
     void findAll() {
         // given
         final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
 
         // when
-        final var kunden = kundeRepo.getKunden(suchkriterien).block();
+        final var produkte = produktRepo.getProdukte(suchkriterien).block();
 
         // then
-        softly.assertThat(kunden).isNotNull();
-        final var embedded = kunden._embedded();
+        softly.assertThat(produkte).isNotNull();
+        final var embedded = produkte._embedded();
         softly.assertThat(embedded).isNotNull();
-        softly.assertThat(embedded.kunden())
+        softly.assertThat(embedded.produkte())
             .isNotNull()
             .isNotEmpty();
     }
 
-    @ParameterizedTest(name = "[{index}] Suche mit vorhandenem (Teil-) Nachnamen: teil={0}")
-    @ValueSource(strings = NACHNAME_TEIL)
-    @DisplayName("Suche mit vorhandenem (Teil-) Nachnamen")
+    @ParameterizedTest(name = "[{index}] Suche mit vorhandenem (Teil-) Namen: teil={0}")
+    @ValueSource(strings = NAME_TEIL)
+    @DisplayName("Suche mit vorhandenem (Teil-) Namen")
     void findByNachnameTeil(final String teil) {
         // given
         final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-        suchkriterien.add(NACHNAME_PARAM, teil);
+        suchkriterien.add(NAME_PARAM, teil);
 
         // when
-        final var kunden = kundeRepo.getKunden(suchkriterien).block();
+        final var produkte = produktRepo.getProdukte(suchkriterien).block();
 
         // then
-        assertThat(kunden).isNotNull();
-        final var embedded = kunden._embedded();
+        assertThat(produkte).isNotNull();
+        final var embedded = produkte._embedded();
         assertThat(embedded).isNotNull();
-        final var kundenList = embedded.kunden();
-        assertThat(kundenList)
+        final var produkteList = embedded.produkte();
+        assertThat(produkteList)
             .isNotNull()
             .isNotEmpty();
-        kundenList
+        produkteList
             .stream()
-            .map(KundeDownload::nachname)
-            .forEach(nachname -> softly.assertThat(nachname).containsIgnoringCase(teil));
+            .map(ProduktDownload::name)
+            .forEach(name -> softly.assertThat(name).containsIgnoringCase(teil));
     }
 
-    @ParameterizedTest(name = "[{index}] Suche mit vorhandener Email: email={0}")
-    @ValueSource(strings = EMAIL_VORHANDEN)
-    @DisplayName("Suche mit vorhandener Email")
-    void findByEmail(final String email) {
+    @ParameterizedTest(name = "[{index}] Suche mit vorhandenem Namen und PLZ: name={0}")
+    @CsvSource(NAME_TEIL)
+    @DisplayName("Suche mit vorhandenem Name")
+    void findByNachname(final String name) {
         // given
         final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-        suchkriterien.add(EMAIL_PARAM, email);
+        suchkriterien.add(NAME_PARAM, name);
 
         // when
-        final var kunden = kundeRepo.getKunden(suchkriterien).block();
+        final var produkte = produktRepo.getProdukte(suchkriterien).block();
 
         // then
-        assertThat(kunden).isNotNull();
-        final var embedded = kunden._embedded();
-        assertThat(embedded).isNotNull();
-        final var kundenList = embedded.kunden();
-        assertThat(kundenList)
-            .isNotNull()
-            .hasSize(1);
-        assertThat(kundenList.get(0))
-            .extracting(KundeDownload::email)
-            .isEqualTo(email);
-    }
-
-    @ParameterizedTest(name = "[{index}] Suche mit vorhandenem Nachnamen und PLZ: nachname={0}, plz={1}")
-    @CsvSource(NACHNAME_TEIL + ',' + PLZ_VORHANDEN)
-    @DisplayName("Suche mit vorhandenem Nachnamen und PLZ")
-    void findByNachnamePLZ(final String nachname, final String plz) {
-        // given
-        final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-        suchkriterien.add(NACHNAME_PARAM, nachname);
-        suchkriterien.add(PLZ_PARAM, plz);
-
-        // when
-        final var kunden = kundeRepo.getKunden(suchkriterien).block();
-
-        // then
-        assertThat(kunden).isNotNull();
-        assertThat(kunden._embedded()).isNotNull();
-        final var kundenList = kunden._embedded().kunden();
-        assertThat(kundenList)
+        assertThat(produkte).isNotNull();
+        assertThat(produkte._embedded()).isNotNull();
+        final var produkteList = produkte._embedded().produkte();
+        assertThat(produkteList)
             .isNotNull()
             .isNotEmpty();
-        kundenList
-            .forEach(kunde -> {
-                softly.assertThat(kunde.nachname()).containsIgnoringCase(nachname);
-                softly.assertThat(kunde.adresse().plz()).startsWith(plz);
-            });
+        produkteList
+            .forEach(produkt -> softly.assertThat(produkt.name()).containsIgnoringCase(name));
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -267,13 +217,9 @@ class ProduktGetRestTest {
             // then
             assertThat(body).isNotNull().isNotBlank();
 
-            final var nachnamePath = "$.nachname";
-            final String nachname = JsonPath.read(body, nachnamePath);
-            softly.assertThat(nachname).matches(NAME_PATTERN);
-
-            final var emailPath = "$.email";
-            final String email = JsonPath.read(body, emailPath);
-            softly.assertThat(email).contains("@");
+            final var namePath = "$.name";
+            final String name = JsonPath.read(body, namePath);
+            softly.assertThat(name).matches(NAME_PATTERN);
 
             final LinkDiscoverer linkDiscoverer = new HalLinkDiscoverer();
             final var selfLink = linkDiscoverer.findLinkWithRel("self", body).get().getHref();
@@ -285,14 +231,12 @@ class ProduktGetRestTest {
         @DisplayName("Suche mit vorhandener ID")
         void findById(final String id) {
             // when
-            final var kunde = kundeRepo.getKunde(id).block();
+            final var produkt = produktRepo.getProdukt(id).block();
 
             // then
-            assertThat(kunde).isNotNull();
-            softly.assertThat(kunde.nachname()).isNotNull();
-            softly.assertThat(kunde.email()).isNotNull();
-            softly.assertThat(kunde.adresse().plz()).isNotNull();
-            softly.assertThat(kunde._links().self().href()).endsWith("/" + id);
+            assertThat(produkt).isNotNull();
+            softly.assertThat(produkt.name()).isNotNull();
+            softly.assertThat(produkt._links().self().href()).endsWith("/" + id);
         }
 
         @ParameterizedTest(name = "[{index}] Suche mit vorhandener ID und vorhandener Version: id={0}, version={1}")
@@ -312,12 +256,12 @@ class ProduktGetRestTest {
             assertThat(statusCode).isEqualTo(NOT_MODIFIED);
         }
 
-        @ParameterizedTest(name = "[{index}] Suche mit vorhandener ID und Version als kunde: id={0}, version={1}")
-        @CsvSource(ID_VORHANDEN_KUNDE + ", 0")
-        @DisplayName("Suche mit vorhandener ID und Version als kunde")
-        void findByIdVersionRolleKunde(final String id, final String version) {
+        @ParameterizedTest(name = "[{index}] Suche mit vorhandener ID und Version als produkt: id={0}, version={1}")
+        @CsvSource(ID_VORHANDEN_PRODUKT + ", 0")
+        @DisplayName("Suche mit vorhandener ID und Version als produkt")
+        void findByIdVersionRolleProdukt(final String id, final String version) {
             // when
-            final var statusCode = clientKunde
+            final var statusCode = clientProdukt
                 .get()
                 .uri(ID_PATH, id)
                 .accept(HAL_JSON)
@@ -330,11 +274,11 @@ class ProduktGetRestTest {
         }
 
         @ParameterizedTest(name = "[{index}] Suche mit vorhandener ID und Version unberechtigt: id={0}, version={1}")
-        @CsvSource(ID_VORHANDEN_ANDERER_KUNDE + ", 0")
+        @CsvSource(ID_VORHANDEN_ANDERES_PRODUKT + ", 0")
         @DisplayName("Suche mit vorhandener ID und Version unberechtigt")
-        void findByIdAndererKunde(final String id, final String version) {
+        void findByIdAnderesProdukt(final String id, final String version) {
             // when
-            final var statusCode = clientKunde
+            final var statusCode = clientProdukt
                 .get()
                 .uri(ID_PATH, id)
                 .accept(HAL_JSON)
@@ -364,9 +308,9 @@ class ProduktGetRestTest {
         @ParameterizedTest(name = "[{index}] Suche mit nicht-vorhandener ID als Produkt: {0}")
         @ValueSource(strings = ID_NICHT_VORHANDEN)
         @DisplayName("Suche mit nicht-vorhandener ID als Produkt")
-        void findByIdNichtVorhandenKunde(final String id) {
+        void findByIdNichtVorhandesProdukt(final String id) {
             // when
-            final var statusCode = clientKunde
+            final var statusCode = clientProdukt
                 .get()
                 .uri(ID_PATH, id)
                 .exchangeToMono(response -> Mono.just(response.statusCode()))
@@ -376,172 +320,33 @@ class ProduktGetRestTest {
             assertThat(statusCode).isEqualTo(FORBIDDEN);
         }
 
-        @ParameterizedTest(name = "[{index}] Suche mit ID, aber falschem Passwort: username={0}, password={1}, id={2}")
-        @CsvSource(USER_ADMIN + ',' + PASSWORD_FALSCH + ',' + ID_VORHANDEN)
-        @DisplayName("Suche mit ID, aber falschem Passwort")
-        void findByIdFalschesPasswort(final String username, final String password, final String id) {
-            // given
-            final var clientFalsch = WebClient.builder()
-                .filter(basicAuthentication(username, password))
-                .baseUrl(baseUrl)
-                .build();
-
-            // when
-            final var statusCode = clientFalsch
-                .get()
-                .uri(ID_PATH, id)
-                .exchangeToMono(response -> Mono.just(response.statusCode()))
-                .block();
-
-            // then
-            assertThat(statusCode).isEqualTo(UNAUTHORIZED);
-        }
-    }
-
-    @Nested
-    @DisplayName("REST-Schnittstelle fuer die Suche mit Enums")
-    class SucheMitEnums {
-        @ParameterizedTest(name = "[{index}] Suche mit Teil-Nachname und Geschlecht: nachname={0}, geschlecht={1}")
-        @CsvSource(NACHNAME_TEIL + ',' + WEIBLICH)
-        @DisplayName("Suche mit Teil-Nachname und Geschlecht")
-        void findByNachnameGeschlecht(final String nachname, final String geschlecht) {
-            // given
-            final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-            suchkriterien.add(NACHNAME_PARAM, nachname);
-            suchkriterien.add(GESCHLECHT_PARAM, geschlecht);
-
-            // when
-            final var kunden = kundeRepo.getKunden(suchkriterien).block();
-
-            // then
-            assertThat(kunden).isNotNull();
-            final var embedded = kunden._embedded();
-            assertThat(embedded).isNotNull();
-            final var kundenList = embedded.kunden();
-            assertThat(kundenList)
-                .isNotNull()
-                .isNotEmpty();
-            kundenList.forEach(kunde -> {
-                softly.assertThat(kunde.nachname()).containsIgnoringCase(nachname);
-                softly.assertThat(kunde.geschlecht()).isEqualTo(GeschlechtType.of(geschlecht).orElse(null));
-            });
-        }
-
-        @ParameterizedTest(name = "[{index}] Suche mit Teil-Nachname und Familienstand: nachname={0},familienstand={1}")
-        @CsvSource(NACHNAME_TEIL + ',' + VERHEIRATET)
-        @DisplayName("Suche mit Teil-Nachname und Familienstand")
-        void findByNachnameFamilienstand(final String nachname, final String familienstand) {
-            // given
-            final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-            suchkriterien.add(NACHNAME_PARAM, nachname);
-            suchkriterien.add(FAMILIENSTAND_PARAM, familienstand);
-
-            // when
-            final var kunden = kundeRepo.getKunden(suchkriterien).block();
-
-            // then
-            assertThat(kunden).isNotNull();
-            final var embedded = kunden._embedded();
-            assertThat(embedded).isNotNull();
-            final var kundenList = embedded.kunden();
-            assertThat(kundenList)
-                .isNotNull()
-                .isNotEmpty();
-            kundenList.forEach(kunde -> {
-                softly.assertThat(kunde.nachname()).containsIgnoringCase(nachname);
-                softly.assertThat(kunde.familienstand()).isEqualTo(FamilienstandType.of(familienstand).orElse(null));
-            });
-        }
-
-        @ParameterizedTest(name = "[{index}] Suche mit einem Interesse: interesse={0}")
-        @ValueSource(strings = {LESEN, REISEN})
-        @DisplayName("Suche mit einem Interesse")
-        void findByInteresse(final String interesseStr) {
-            // given
-            final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-            suchkriterien.add(INTERESSE_PARAM, interesseStr);
-
-            // when
-            final var kunden = kundeRepo.getKunden(suchkriterien).block();
-
-            // then
-            assertThat(kunden).isNotNull();
-            final var embedded = kunden._embedded();
-            assertThat(embedded).isNotNull();
-            final var kundenList = embedded.kunden();
-            assertThat(kundenList)
-                .isNotNull()
-                .isNotEmpty();
-            @SuppressWarnings("OptionalGetWithoutIsPresent")
-            final var interesse = InteresseType.of(interesseStr).get();
-            kundenList.forEach(kunde -> {
-                final var interessen = kunde.interessen();
-                softly.assertThat(interessen)
-                    .isNotNull()
-                    .doesNotContainNull()
-                    .contains(interesse);
-            });
-        }
-
-        @ParameterizedTest(name = "[{index}] Suche mit mehreren Interessen: interesse1={0}, interesse1={1}")
-        @CsvSource(LESEN + ',' + REISEN)
-        @DisplayName("Suche mit mehreren Interessen")
-        @SuppressWarnings("OptionalGetWithoutIsPresent")
-        void findByInteressen(final String interesse1Str, final String interesse2Str) {
-            // given
-            final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
-            suchkriterien.add(INTERESSE_PARAM, interesse1Str);
-            suchkriterien.add(INTERESSE_PARAM, interesse2Str);
-
-            // when
-            final var kunden = kundeRepo.getKunden(suchkriterien).block();
-
-            // then
-            assertThat(kunden).isNotNull();
-            final var embedded = kunden._embedded();
-            assertThat(embedded).isNotNull();
-            final var kundenList = embedded.kunden();
-            assertThat(kundenList)
-                .isNotNull()
-                .isNotEmpty();
-            final var interesse1 = InteresseType.of(interesse1Str).get();
-            final var interesse2 = InteresseType.of(interesse2Str).get();
-            final var interessenList = List.of(interesse1, interesse2);
-            kundenList.forEach(kunde -> {
-                final var interessen = kunde.interessen();
-                softly.assertThat(interessen)
-                    .isNotNull()
-                    .doesNotContainNull()
-                    .containsAll(interessenList);
-            });
-        }
     }
 
     @Nested
     @DisplayName("REST-Schnittstelle fuer die Suche nach Strings")
     class SucheNachStrings {
-        @ParameterizedTest(name = "[{index}] Suche Nachnamen mit Praefix prefix={0}")
-        @ValueSource(strings = {NACHNAME_PREFIX_A, NACHNAME_PREFIX_D})
-        @DisplayName("Suche Nachnamen mit Praefix")
-        void findNachnamen(final String prefix) {
+        @ParameterizedTest(name = "[{index}] Suche Namen mit Praefix prefix={0}")
+        @ValueSource(strings = {NAME_PREFIX_A, NAME_PREFIX_D})
+        @DisplayName("Suche Namen mit Praefix")
+        void findNamen(final String prefix) {
             // when
-            final var nachnamenStr = client
+            final var namenStr = client
                 .get()
-                .uri(builder -> builder.pathSegment(NACHNAME_PARAM, prefix).build())
+                .uri(builder -> builder.pathSegment(NAME_PARAM, prefix).build())
                 .exchangeToMono(response -> response.bodyToMono(String.class))
                 .block();
 
             // then
-            assertThat(nachnamenStr)
+            assertThat(namenStr)
                 .isNotNull()
                 .isNotEmpty();
-            final var tmp = nachnamenStr.replace(" ", "").substring(1);
-            final var nachnamen = tmp.substring(0, tmp.length() - 1).split(",");
-            assertThat(nachnamen)
+            final var tmp = namenStr.replace(" ", "").substring(1);
+            final var namen = tmp.substring(0, tmp.length() - 1).split(",");
+            assertThat(namen)
                 .isNotNull()
                 .isNotEmpty();
-            Arrays.stream(nachnamen)
-                .forEach(nachname -> assertThat(nachname).startsWith(prefix));
+            Arrays.stream(namen)
+                .forEach(name -> assertThat(name).startsWith(prefix));
         }
     }
 }

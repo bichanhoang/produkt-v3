@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.acme.produkt.rest;
 
-/**
- * Tests für die GraphQL-Schnittstelle.
- */
-package com.acme.produkt.graphql;
+import java.util.List;
+
+@SuppressWarnings("WriteTag")
+record ProduktDownloadList(List<ProduktDownload> produkte) {
+}

@@ -17,13 +17,9 @@
 package com.acme.produkt.service;
 
 import com.acme.produkt.MailProps;
-import com.acme.produkt.entity.Adresse;
 import com.acme.produkt.entity.Produkt;
 import com.acme.produkt.entity.Umsatz;
 import com.acme.produkt.repository.ProduktRepository;
-import com.acme.produkt.security.CustomUser;
-import com.acme.produkt.security.CustomUserDetailsService;
-import com.acme.produkt.security.LoginRepository;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -33,7 +29,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Currency;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
@@ -48,15 +43,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import static com.acme.produkt.entity.FamilienstandType.LEDIG;
-import static com.acme.produkt.entity.GeschlechtType.WEIBLICH;
-import static com.acme.produkt.entity.InteresseType.LESEN;
-import static com.acme.produkt.entity.InteresseType.REISEN;
 import static java.math.BigDecimal.ONE;
 import static java.time.LocalDateTime.now;
 import static java.util.Locale.GERMANY;
@@ -79,15 +69,10 @@ import static org.mockito.Mockito.when;
 class ProduktWriteServiceTest {
     private static final String ID_NICHT_VORHANDEN = "99999999-9999-9999-9999-999999999999";
     private static final String ID_UPDATE = "00000000-0000-0000-0000-000000000002";
-    private static final String PLZ = "12345";
-    private static final String ORT = "Testort";
-    private static final String NACHNAME = "Nachname-Test";
-    private static final String EMAIL = "theo@test.de";
-    private static final LocalDate GEBURTSDATUM = LocalDate.of(2022, 1, 1);
+    private static final String NAME = "Name-Test";
+    private static final LocalDate ERSCHEINUNGSDATUM = LocalDate.of(2022, 1, 1);
     private static final Currency WAEHRUNG = Currency.getInstance(GERMANY);
     private static final String HOMEPAGE = "https://test.de";
-    private static final String USERNAME = "test";
-    private static final String PASSWORD = "Pass123.";
     private static final String VERSION_ALT = "-1";
 
     @Mock
@@ -97,14 +82,7 @@ class ProduktWriteServiceTest {
 
     @Mock
     @SuppressWarnings({"unused", "UnusedVariable"})
-    private LoginRepository loginRepo;
-
-    @Mock
-    @SuppressWarnings({"unused", "UnusedVariable"})
     private DelegatingPasswordEncoder passwordEncoder;
-
-    @InjectMocks
-    private CustomUserDetailsService userDetailsService;
 
     @Mock
     @SuppressWarnings({"unused", "UnusedVariable"})
@@ -114,10 +92,7 @@ class ProduktWriteServiceTest {
     @SuppressWarnings({"unused", "UnusedVariable"})
     private MailProps mailProps;
 
-    @InjectMocks
-    private Mailer mailer;
-
-    private KundeWriteService service;
+    private ProduktWriteService service;
 
     @InjectSoftAssertions
     private SoftAssertions softly;
@@ -131,102 +106,68 @@ class ProduktWriteServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        service = new KundeWriteService(repo, validator, userDetailsService, mailer);
+        service = new ProduktWriteService(repo, validator);
     }
 
     @Nested
     @DisplayName("Anwendungskern fuer Erzeugen")
     class Erzeugen {
-        @ParameterizedTest(name = "[{index}] Neuanlegen eines neuen Kunden: nachname={0}, email={1}, plz={2}")
-        @CsvSource(NACHNAME + ',' + EMAIL + ',' + PLZ + ',' + USERNAME + ',' + PASSWORD)
-        @DisplayName("Neuanlegen eines neuen Kunden")
+        @ParameterizedTest(name = "[{index}] Neuanlegen eines neuen Produktes: name={0}")
+        @CsvSource(NAME)
+        @DisplayName("Neuanlegen eines neuen Produktes")
         void create(final ArgumentsAccessor args) {
             // given
-            final var nachname = args.getString(0);
-            final var email = args.getString(1);
-            final var plz = args.getString(2);
-            final var username = args.getString(3);
-            final var password = args.getString(4);
+            final var name = args.getString(0);
 
-            when(repo.existsByEmail(email)).thenReturn(false);
-            final var user = createCustomUserMock(username, password);
-            final var kundeMock = createKundeMock(randomUUID(), nachname, email, plz);
-            when(repo.save(kundeMock)).thenReturn(kundeMock);
+            final var produktMock = createProduktMock(randomUUID(), name);
+            when(repo.save(produktMock)).thenReturn(produktMock);
 
             // when
-            final var kunde = service.create(kundeMock, user);
+            final var produkte = service.create(produktMock);
 
             // then
-            assertThat(kunde).isNotNull();
-            softly.assertThat(kunde.getId()).isNotNull();
-            softly.assertThat(kunde.getName()).isEqualTo(nachname);
-            softly.assertThat(kunde.getEmail()).isEqualTo(email);
-            softly.assertThat(kunde.getAdresse().getPlz()).isEqualTo(plz);
-            softly.assertThat(kunde.getUsername()).isEqualTo(username);
+            assertThat(produkte).isNotNull();
+            softly.assertThat(produkte.getId()).isNotNull();
+            softly.assertThat(produkte.getName()).isEqualTo(name);
         }
 
-        @ParameterizedTest(name = "[{index}] Neuanlegen mit existierender Email: nachname={0}, email={1}, plz={2}")
-        @CsvSource(NACHNAME + ',' + EMAIL + ',' + PLZ + ',' + USERNAME + ',' + PASSWORD)
-        @DisplayName("Neuanlegen mit existierender Email")
-        void createEmailExists(final ArgumentsAccessor args) {
-            // given
-            final var nachname = args.getString(0);
-            final var email = args.getString(1);
-            final var plz = args.getString(2);
-            final var username = args.getString(3);
-            final var password = args.getString(4);
-
-            when(repo.existsByEmail(email)).thenReturn(true);
-            final var user = createCustomUserMock(username, password);
-            final var kundeMock = createKundeMock(nachname, email, plz);
-
-            // when
-            final var emailExistsException = catchThrowableOfType(
-                () -> service.create(kundeMock, user),
-                EmailExistsException.class
-            );
-
-            // then
-            assertThat(emailExistsException).isNotNull();
-            assertThat(emailExistsException.getEmail()).contains(email);
-        }
     }
 
     @Nested
     @DisplayName("Anwendungskern fuer Aendern")
     class Aendern {
-        @ParameterizedTest(name = "[{index}] Aendern eines Kunden: id={0}, nachname={1}, email={2}, plz={3}")
-        @CsvSource(ID_UPDATE + ',' +  NACHNAME + ',' +  EMAIL + ',' +  PLZ)
-        @DisplayName("Aendern eines Kunden")
-        void update(final String idStr, final String nachname, final String email, final String plz) {
+        @ParameterizedTest(name = "[{index}] Aendern eines Produktes: id={0}, name={1}")
+        @CsvSource(ID_UPDATE + ',' + NAME)
+        @DisplayName("Aendern eines Produktes")
+        void update(final String idStr, final String name) {
             // given
             final var id = UUID.fromString(idStr);
-            final var kundeMock = createKundeMock(id, nachname, email, plz);
-            when(repo.findById(id)).thenReturn(Optional.of(kundeMock));
-            when(repo.save(kundeMock)).thenReturn(kundeMock);
+            final var produktMock = createProduktMock(id, name);
+            when(repo.findById(id)).thenReturn(Optional.of(produktMock));
+            when(repo.save(produktMock)).thenReturn(produktMock);
 
             // when
-            final var kunde = service.update(kundeMock, id, kundeMock.getVersion());
+            final var produkte = service.update(produktMock, id, produktMock.getVersion());
 
             // then
-            assertThat(kunde)
+            assertThat(produkte)
                 .isNotNull()
                 .extracting(Produkt::getId)
-                .isEqualTo(kundeMock.getId());
+                .isEqualTo(produktMock.getId());
         }
 
-        @ParameterizedTest(name = "[{index}] Aendern eines nicht-vorhandenen Kunden: id={0}, nachname={1}, email={2}")
-        @CsvSource(ID_NICHT_VORHANDEN + ',' + NACHNAME + ',' + EMAIL + ',' + PLZ)
-        @DisplayName("Aendern eines nicht-vorhandenen Kunden")
-        void updateNichtVorhanden(final String idStr, final String nachname, final String email, final String plz) {
+        @ParameterizedTest(name = "[{index}] Aendern eines nicht-vorhandenen Produktes: id={0}, name={1}")
+        @CsvSource(ID_NICHT_VORHANDEN + ',' + NAME)
+        @DisplayName("Aendern eines nicht-vorhandenen Produktes")
+        void updateNichtVorhanden(final String idStr, final String name) {
             // given
             final var id = UUID.fromString(idStr);
-            final var kundeMock = createKundeMock(id, nachname, email, plz);
+            final var produktMock = createProduktMock(id, name);
             when(repo.findById(id)).thenReturn(Optional.empty());
 
             // when
             final var notFoundException = catchThrowableOfType(
-                () -> service.update(kundeMock, id, kundeMock.getVersion()),
+                () -> service.update(produktMock, id, produktMock.getVersion()),
                 NotFoundException.class
             );
 
@@ -235,23 +176,21 @@ class ProduktWriteServiceTest {
         }
 
         @ParameterizedTest(name = "[{index}] Aendern mit alter Versionsnummer: id={0}, version={4}")
-        @CsvSource(ID_UPDATE + ',' + NACHNAME + ',' + EMAIL + ',' + PLZ + ',' + VERSION_ALT)
+        @CsvSource(ID_UPDATE + ',' + NAME + ',' + VERSION_ALT)
         @DisplayName("Aendern mit alter Versionsnummer")
         void updateVersionOutdated(final ArgumentsAccessor args) {
             // given
             final var idStr = args.getString(0);
             final var id = UUID.fromString(idStr);
-            final var nachname = args.getString(1);
-            final var email = args.getString(2);
-            final var plz = args.getString(3);
-            final var version = args.getInteger(4);
-            final var kundeMock = createKundeMock(id, nachname, email, plz);
-            when(repo.findById(id)).thenReturn(Optional.of(kundeMock));
+            final var name = args.getString(1);
+            final var version = args.getInteger(2);
+            final var produktMock = createProduktMock(id, name);
+            when(repo.findById(id)).thenReturn(Optional.of(produktMock));
 
             // when
             @SuppressWarnings("LocalVariableNamingConvention")
             final var versionOutdatedException = catchThrowableOfType(
-                () -> service.update(kundeMock, id, version),
+                () -> service.update(produktMock, id, version),
                 VersionOutdatedException.class
             );
 
@@ -266,11 +205,7 @@ class ProduktWriteServiceTest {
     // -------------------------------------------------------------------------
     // Hilfsmethoden fuer Mock-Objekte
     // -------------------------------------------------------------------------
-    private Produkt createKundeMock(final String nachname, final String email, final String plz) {
-        return createKundeMock(null, nachname, email, plz);
-    }
-
-    private Produkt createKundeMock(final UUID id, final String nachname, final String email, final String plz) {
+    private Produkt createProduktMock(final UUID id, final String name) {
         final URL homepage;
         try {
             homepage = URI.create(HOMEPAGE).toURL();
@@ -282,32 +217,15 @@ class ProduktWriteServiceTest {
             .betrag(ONE)
             .waehrung(WAEHRUNG)
             .build();
-        final var adresse = Adresse.builder()
-            .id(randomUUID())
-            .plz(plz)
-            .ort(ORT)
-            .build();
         return Produkt.builder()
             .id(id)
             .version(0)
-            .name(nachname)
-            .email(email)
-            .kategorie(1)
-            .hasNewsletter(true)
-            .geburtsdatum(GEBURTSDATUM)
+            .name(name)
+            .erscheinungsdatum(ERSCHEINUNGSDATUM)
             .homepage(homepage)
-            .geschlecht(WEIBLICH)
-            .familienstand(LEDIG)
-            .interessen(List.of(LESEN, REISEN))
             .umsatz(umsatz)
-            .adresse(adresse)
-            .username(USERNAME)
             .erzeugt(now(ZoneId.of("Europe/Berlin")))
             .aktualisiert(now(ZoneId.of("Europe/Berlin")))
             .build();
-    }
-
-    private CustomUser createCustomUserMock(final String username, final String password) {
-        return new CustomUser(username, password);
     }
 }

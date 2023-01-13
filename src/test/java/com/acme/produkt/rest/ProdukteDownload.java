@@ -16,25 +16,6 @@
  */
 package com.acme.produkt.rest;
 
-import com.acme.produkt.entity.FamilienstandType;
-import com.acme.produkt.entity.GeschlechtType;
-import com.acme.produkt.entity.InteresseType;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.List;
-
-@SuppressWarnings({"WriteTag", "RecordComponentNumber"})
-record KundeUpload(
-    String nachname,
-    String email,
-    int kategorie,
-    boolean hasNewsletter,
-    LocalDate geburtsdatum,
-    URL homepage,
-    GeschlechtType geschlecht,
-    FamilienstandType familienstand,
-    List<InteresseType> interessen,
-    Umsatz umsatz,
-    Adresse adresse
-) {
+@SuppressWarnings({"WriteTag", "RecordComponentName"})
+record ProdukteDownload(ProduktDownloadList _embedded) {
 }
