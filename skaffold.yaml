@@ -25,11 +25,11 @@
 apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
-  name: kunde
+  name: produkt
 # https://skaffold.dev/docs/pipeline-stages/builders
 build:
   artifacts:
-    - image: juergenzimmermann/kunde
+    - image: juergenzimmermann/produkt
       # https://skaffold.dev/docs/pipeline-stages/builders/buildpacks
       # https://paketo.io/docs/howto/java
       # https://www.youtube.com/watch?v=aI19ZYV4-7o
@@ -48,9 +48,9 @@ deploy:
   # Alternativen: Kustomize, kpt, kubectl
   helm:
     releases:
-      - name: kunde
-        chartPath: extras/kunde
-        valuesFiles: [extras/kunde/values.yaml]
+      - name: produkt
+        chartPath: extras/produkt
+        valuesFiles: [extras/produkt/values.yaml]
         namespace: acme
 profiles:
   - name: dev
@@ -59,14 +59,14 @@ profiles:
     deploy:
       helm:
         releases:
-          - name: kunde
-            chartPath: extras/kunde
-            valuesFiles: [extras/kunde/values.yaml, extras/kunde/dev.yaml]
-            #valuesFiles: [extras/kunde/values.yaml, extras/kunde/dev.yaml, extras/kunde/dev-mysql.yaml]
-            #valuesFiles: [extras/kunde/values.yaml, extras/kunde/dev.yaml, extras/kunde/dev-h2.yaml]
+          - name: produkt
+            chartPath: extras/produkt
+            valuesFiles: [extras/produkt/values.yaml, extras/produkt/dev.yaml]
+            #valuesFiles: [extras/produkt/values.yaml, extras/produkt/dev.yaml, extras/produkt/dev-mysql.yaml]
+            #valuesFiles: [extras/produkt/values.yaml, extras/produkt/dev.yaml, extras/produkt/dev-h2.yaml]
             namespace: acme
     # https://skaffold.dev/docs/pipeline-stages/port-forwarding
     portForward:
       - resourceType: service
-        resourceName: kunde
+        resourceName: produkt
         port: http-svc

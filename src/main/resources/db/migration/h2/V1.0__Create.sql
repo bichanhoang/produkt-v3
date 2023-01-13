@@ -49,11 +49,11 @@ CREATE TABLE IF NOT EXISTS adresse (
 
 CREATE INDEX IF NOT EXISTS adresse_plz_idx ON adresse(plz);
 
-CREATE TABLE IF NOT EXISTS kunde (
+CREATE TABLE IF NOT EXISTS produkt (
     id            UUID PRIMARY KEY,
                   -- http://www.h2database.com/html/datatypes.html#integer_type
     version       INTEGER NOT NULL DEFAULT 0,
-    nachname      VARCHAR(40) NOT NULL,
+    name      VARCHAR(40) NOT NULL,
     email         VARCHAR(40) NOT NULL UNIQUE,
                   -- http://www.h2database.com/html/grammar.html#condition
     kategorie     INTEGER NOT NULL CHECK (kategorie >= 0 AND kategorie <= 9),
@@ -72,10 +72,10 @@ CREATE TABLE IF NOT EXISTS kunde (
     aktualisiert  TIMESTAMP NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS kunde_nachname_idx ON kunde(nachname);
+CREATE INDEX IF NOT EXISTS kunde_nachname_idx ON produkt(nachname);
 
 CREATE TABLE IF NOT EXISTS kunde_interessen (
-    kunde_id  UUID NOT NULL REFERENCES kunde,
+    kunde_id  UUID NOT NULL REFERENCES produkt,
     interesse CHAR(1) NOT NULL CHECK (interesse ~ 'S|L|R'),
 
     PRIMARY KEY (kunde_id, interesse)

@@ -36,19 +36,19 @@
 
 ' https://github.com/plantuml-stdlib/C4-PlantUML#supported-diagram-types
 Person(mitarbeiter, "Mitarbeiter", "Kundenbetreuung", $sprite="users")
-Person(kunde, "Kunde", "Registrierte Kunden", $sprite="users")
+Person(produkt, "Kunde", "Registrierte Kunden", $sprite="users")
 Container(web, "Webapp", "Angular", "SPA", $sprite="angular")
 
 System_Boundary(kubernetes, "Kubernetes Cluster") {
     Container(gateway, "Gateway", "nginx", "Ingress Controller", $sprite="kubernetes")
-    Container(kv, "kunde", "Spring", "Kundenverwaltung", $sprite="spring")
+    Container(kv, "produkt", "Spring", "Kundenverwaltung", $sprite="spring")
     Container(bv, "bestellung", "Spring", "Bestellverwaltung", $sprite="spring")
 }
 
 ContainerDb(postgres, "Datenbank", "PostgreSQL", "Kundendaten\nBestellungen", $sprite="postgresql")
 
 Rel(mitarbeiter, web, "Uses", "https")
-Rel(kunde, web, "Uses", "https")
+Rel(produkt, web, "Uses", "https")
 Rel(web, gateway, "Uses", "https")
 Rel(gateway, kv, "/kunden", "http")
 Rel(gateway, bv, "/bestellungen", "http")

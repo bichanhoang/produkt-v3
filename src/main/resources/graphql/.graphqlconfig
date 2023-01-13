@@ -1,5 +1,5 @@
 {
-  "name": "kunde",
+  "name": "produkt",
   "schemaPath": "schema.graphql",
   "extensions": {
     "endpoints": {

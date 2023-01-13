@@ -75,7 +75,7 @@
 //
 //  13) Initialisierung des Gradle Wrappers in der richtigen Version
 //      dazu ist ggf. eine Internetverbindung erforderlich
-//        gradle wrapper --gradle-version=8.0-rc-1 --distribution-type=bin
+//        gradle wrapper --gradle-version=8.0-milestone-6 --distribution-type=bin
 
 // https://github.com/gradle/kotlin-dsl/tree/master/samples
 // https://docs.gradle.org/current/userguide/kotlin_dsl.html
@@ -206,18 +206,16 @@ configurations {
 @Suppress("CommentSpacing")
 // https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_separation
 dependencies {
-    implementation(platform(libs.micrometerBom))
+    //implementation(platform(libs.micrometerBom))
     //implementation(platform(libs.jacksonBom))
-    implementation(platform(libs.nettyBom))
-    implementation(platform(libs.reactorBom))
-    implementation(platform(libs.springBom))
-    implementation(platform(libs.querydslBom))
+    //implementation(platform(libs.nettyBom))
+    //implementation(platform(libs.reactorBom))
+    //implementation(platform(libs.springBom))
     //implementation(platform(libs.springDataBom))
     //implementation(platform(libs.springSecurityBom))
     //implementation(platform(libs.zipkinReporterBom))
-    implementation(platform(libs.assertjBom))
     implementation(platform(libs.mockitoBom))
-    implementation(platform(libs.junitBom))
+    //implementation(platform(libs.junitBom))
     implementation(platform(libs.allureBom))
     implementation(platform(libs.springBootBom))
     // spring-boot-starter-parent als "Parent POM"
@@ -256,16 +254,12 @@ dependencies {
 
     implementation(libs.jfiglet)
 
-    // https://github.com/querydsl/querydsl/issues/2444#issuecomment-489538997
-    // https://stackoverflow.com/questions/59950657/querydsl-annotation-processor-and-gradle-plugin#answer-59951292
-    // https://github.com/querydsl/querydsl/issues/3436
-    // https://discuss.gradle.org/t/annotationprocessor-querydsl-java-lang-noclassdeffounderror/27107/5
-    implementation("com.querydsl:querydsl-jpa:${libs.versions.querydsl.get()}:jakarta")
-    annotationProcessor("com.querydsl:querydsl-apt:${libs.versions.querydsl.get()}:jakarta")
-    annotationProcessor("jakarta.persistence:jakarta.persistence-api:${libs.versions.jakartaPersistence.get()}")
-
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+
+    // https://docs.jboss.org/hibernate/orm/6.1/userguide/html_single/Hibernate_User_Guide.html#tooling-gradle-modelgen
+    // QueryDSL com.querydsl:querydsl-jpa von Juli 2021 unterstuetzt nur JPA 2.2 und Hibernate 5.6
+    annotationProcessor(libs.hibernateJpamodelgen)
 
     // https://springdoc.org/v2/#swagger-ui-configuration
     // https://github.com/springdoc/springdoc-openapi
@@ -308,9 +302,9 @@ dependencies {
     constraints {
         implementation(libs.annotations)
         //implementation(libs.springGraphQL)
-        implementation(libs.springHateoas)
+        //implementation(libs.springHateoas)
         //implementation(libs.jakartaPersistence)
-        implementation(libs.hibernate)
+        //implementation(libs.hibernate)
         //runtimeOnly(libs.postgres)
         //runtimeOnly(libs.mysql)
         if (System.getProperty("db") == "oracle") {
@@ -333,6 +327,8 @@ dependencies {
         //implementation(libs.logback)
         //implementation(libs.springSecurityRsa)
         //implementation(libs.bundles.log4j)
+
+        //testImplementation(libs.assertj)
     }
 }
 /* ktlint-enable comment-spacing */
@@ -361,8 +357,9 @@ tasks.compileJava {
 
     // https://uber.github.io/AutoDispose/error-prone
     // https://errorprone.info/docs/flags
-    // https://stackoverflow.com/questions/56975581/how-to-setup-error-prone-with-gradle-getting-various-errors
+    // TODO https://github.com/google/error-prone/issues/2321
     with(options.errorprone.errorproneArgs) {
+        add("-Xep:InvalidParam:OFF")
         add("-Xep:MissingSummary:OFF")
     }
 
@@ -377,6 +374,7 @@ tasks.compileTestJava {
         add("-Xlint:unchecked")
         add("--enable-preview")
     }
+    // Spring HATEOAS: _embedded.List
     options.errorprone.errorproneArgs.add("-Xep:VariableNameSameAsType:OFF")
 }
 
@@ -550,6 +548,10 @@ tasks.test {
     systemProperty("junit.platform.output.capture.stderr", true)
     systemProperty("spring.config.location", "classpath:/application.yml")
     systemProperty("spring.datasource.password", "p")
+    // Tests ohne TLS und ohne HTTP2
+    systemProperty("server.ssl.enabled", false)
+    systemProperty("server.http2.enabled", false)
+    systemProperty("server.ssl.client-auth", "NONE")
     systemProperty("server.tomcat.basedir", "./build/tomcat")
 
     systemProperty("LOG_PATH", "./build/log")

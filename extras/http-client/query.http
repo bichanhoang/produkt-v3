@@ -1,278 +1,72 @@
-### Suche mit vorhandener Kunde-ID als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
+### Suche mit vorhandener Produkt-ID als admin
+GRAPHQL {{baseUrl}}/graphql
 
-{
-  kunde(id: "00000000-0000-0000-0000-000000000001") {
-    version
-    nachname
-    email
-    kategorie
-    hasNewsletter
-    geburtsdatum
+query {
+  produkt(id: "00000000-0000-0000-0000-000000000001") {
+    name
+  }
+}
+
+### Suche mit nicht-vorhandener Produkt-ID als admin
+GRAPHQL {{baseUrl}}/graphql
+
+query {
+  produkt(id: "ffffffff-ffff-ffff-ffff-ffffffffffff") {
+    name
+  }
+}
+
+### Suche mit vorhandener Produkt-ID als admin
+GRAPHQL {{baseUrl}}/graphql
+
+query {
+  produkt(id: "00000000-0000-0000-0000-000000000001") {
+    name
+    erscheinungsdatum
     homepage
-    geschlecht
-    familienstand
-    interessen
-    adresse {
-      plz
-      ort
+    umsatz {
+      betrag
+      waehrung
     }
   }
 }
-> {%
-    client.test('Query mit ID und admin: OK', () => {
-      const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
 
-    client.test('Query mit ID und admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
+### Suche alle Produkte als admin
+GRAPHQL {{baseUrl}}/graphql
 
-    client.test('Query mit ID und admin: body mit Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        // TODO Optional Chaining
-        const kunde = body.data.kunde;
-        client.assert(typeof kunde.nachname === 'string', `kunde: ${JSON.stringify(body.data.kunde)}`);
-        client.assert(typeof kunde.email === 'string', `kunde: ${JSON.stringify(body.data.kunde)}`);
-    });
-%}
-
-
-### Suche mit nicht-vorhandener Kunde-ID als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
-
-{
-  kunde(id: "ffffffff-ffff-ffff-ffff-ffffffffffff") {
-    nachname
-  }
-}
-> {%
-    client.test('Query mit nicht-vorhandener ID und admin: OK', () => {
-      const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
-
-    client.test('Query mit nicht-vorhandener ID und admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
-
-    client.test('Query mit nicht-vorhandener ID und admin: body mit Errors ohne Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        client.assert(typeof body.data === 'object', `body: ${JSON.stringify(body)}`);
-        client.assert(Object.keys(body.data).length === 0, `data: ${JSON.stringify(body.data)}`);
-        // TODO Optional Chaining
-        const errors = body.errors;
-        client.assert(Array.isArray(errors) === true, `errors: ${JSON.stringify(body.errors)}`);
-        client.assert(errors.length === 1, `errors: ${JSON.stringify(body.errors)}`);
-        client.assert(typeof errors[0].extensions.classification === 'string', `errors: ${JSON.stringify(errors)}`);
-        client.assert(errors[0].extensions.classification === 'NOT_FOUND', `errors: ${JSON.stringify(errors)}`);
-    });
-%}
-
-### Suche alle Kunden als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
-
-{
-  kunden {
+query {
+  produkte(input: {}) {
     id
-    nachname
-    kategorie
-    hasNewsletter
-    geburtsdatum
+    name
+    erscheinungsdatum
     homepage
-    geschlecht
-    familienstand
-    interessen
-    adresse {
-      plz
-      ort
+    umsatz {
+      betrag
+      waehrung
     }
   }
 }
-> {%
-    client.test('Query alle Kunden als admin: OK', () => {
-        const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
 
-    client.test('Query alle Kunden als admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
+### Suche Produkte mit dem Namen als admin
+GRAPHQL {{baseUrl}}/graphql
 
-    client.test('Query alle Kunden als admin: body mit Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        // TODO Optional Chaining
-        const kunden = body.data.kunden;
-        client.assert(Array.isArray(kunden) === true, `data: ${JSON.stringify(body.data)}`);
-        client.assert(kunden.length > 0, `data: ${JSON.stringify(body.data)}`);
-    });
-%}
-
-### Suche Kunde mit der Emailadresse als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
-
-{
-  kunden(input: {email: "admin@acme.com"}) {
+query {
+  produkte(input: {name: "a"}) {
     id
-    version
-    nachname
-    kategorie
-    hasNewsletter
-    geburtsdatum
+    name
+    erscheinungsdatum
     homepage
-    geschlecht
-    familienstand
-    interessen
-    adresse {
-      plz
-      ort
+    umsatz {
+      betrag
+      waehrung
     }
   }
 }
-> {%
-    client.test('Query mit der Emailadresse als admin: OK', () => {
-        const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
+### Suche Produkte mit nicht-vorhandenem Namen als admin
+GRAPHQL {{baseUrl}}/graphql
 
-    client.test('Query mit der Emailadresse als admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
-
-    client.test('Query mit der Emailadresse als admin: body mit Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        // TODO Optional Chaining
-        const kunden = body.data.kunden;
-        client.assert(Array.isArray(kunden) === true, `data: ${JSON.stringify(body.data)}`);
-        client.assert(kunden.length === 1, `data: ${JSON.stringify(body.data)}`);
-        const kunde = kunden[0];
-        client.assert(typeof kunde.nachname === 'string', `kunde: ${JSON.stringify(kunde)}`);
-    });
-%}
-
-### Suche Kunde mit nicht-vorhandener Emailadresse als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
-
-{
-  kunden(input: {email: "nicht.vorhanden@acme.com"}) {
+query {
+  produkte(input: {name: "Nichtvorhanden"}) {
     id
   }
 }
-> {%
-    client.test('Query mit nicht-vorhandener Emailadresse und admin: OK', () => {
-        const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
-
-    client.test('Query mit nicht-vorhandener Emailadresse und admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
-
-    client.test('Query mit nicht-vorhandener Emailadresse und admin: body mit Errors ohne Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        client.assert(typeof body.data === 'object', `body: ${JSON.stringify(body)}`);
-        client.assert(Object.keys(body.data).length === 0, `data: ${JSON.stringify(body.data)}`);
-        // TODO Optional Chaining
-        const errors = body.errors;
-        client.assert(Array.isArray(errors) === true, `errors: ${JSON.stringify(body.errors)}`);
-        client.assert(errors.length === 1, `errors: ${JSON.stringify(body.errors)}`);
-        client.assert(typeof errors[0].extensions.classification === 'string', `errors: ${JSON.stringify(errors)}`);
-        client.assert(errors[0].extensions.classification === 'NOT_FOUND', `errors: ${JSON.stringify(errors)}`);
-    });
-%}
-
-### Suche Kunden mit dem Nachnamen als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
-
-{
-  kunden(input: {nachname: "a"}) {
-    id
-    version
-    nachname
-    email
-    kategorie
-    hasNewsletter
-    geburtsdatum
-    homepage
-    geschlecht
-    familienstand
-    interessen
-    adresse {
-      plz
-      ort
-    }
-  }
-}
-> {%
-    client.test('Query mit dem Nachnamen als admin: OK', () => {
-        const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
-
-    client.test('Query mit dem Nachnamen als admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
-
-    client.test('Query mit dem Nachnamen als admin: body mit Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        // TODO Optional Chaining
-        const kunden = body.data.kunden;
-        client.assert(Array.isArray(kunden) === true, `data: ${JSON.stringify(body.data)}`);
-        client.assert(kunden.length > 0, `data: ${JSON.stringify(body.data)}`);
-        kunden.map(kunde => kunde.nachname)
-            .forEach(nachname => client.assert(nachname.includes('a') || nachname.startsWith('A'), `nachname: ${JSON.stringify(nachname)}`));
-    });
-%}
-
-### Suche Kunden mit nicht-vorhandenem Nachnamen als admin
-GRAPHQL {{graphqlUrl}}
-Authorization: Basic {{userAdmin}} {{password}}
-
-{
-  kunden(input: {nachname: "Nichtvorhanden"}) {
-    id
-  }
-}
-> {%
-    client.test('Query mit nicht-vorhandenem Nachnamen und admin: OK', () => {
-        const status = response.status;
-        client.assert(status === 200, `Falscher Statuscode: ${status}`);
-    });
-
-    client.test('Query mit nicht-vorhandenem Nachnamen und admin: application/json', () => {
-        const mimeType = response.contentType.mimeType;
-        client.assert(mimeType === 'application/json', `Falscher MIME-Typ: ${mimeType}`);
-    });
-
-    client.test('Query mit nicht-vorhandenem Nachnamen und admin: body mit Errors ohne Daten', () => {
-        const body = response.body;
-        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
-        client.assert(typeof body.data === 'object', `body: ${JSON.stringify(body)}`);
-        client.assert(Object.keys(body.data).length === 0, `data: ${JSON.stringify(body.data)}`);
-        // TODO Optional Chaining
-        const errors = body.errors;
-        client.assert(Array.isArray(errors) === true, `errors: ${JSON.stringify(body.errors)}`);
-        client.assert(errors.length === 1, `errors: ${JSON.stringify(body.errors)}`);
-        client.assert(typeof errors[0].extensions.classification === 'string', `errors: ${JSON.stringify(errors)}`);
-        client.assert(errors[0].extensions.classification === 'NOT_FOUND', `errors: ${JSON.stringify(errors)}`);
-    });
-%}

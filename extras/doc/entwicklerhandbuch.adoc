@@ -33,20 +33,11 @@ IMPORTANT: Copyright (C) 2015 - present Jürgen Zimmermann, Hochschule Karlsruhe
            GNU General Public License (GPL) v3. +
            For the full text of the license, see the http://www.gnu.org/licenses/gpl-3.0.html[license] file.
 
-== Der Microservice Kunde
+== Der Microservice Produkt
 
 === Der Microservice im Überblick
 
-Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Cras ultricies ligula sed magna dictum porta.
-
-.Architektur als C4 Modell für die Microservices
-[plantuml,c4,svg]
-----
-include::./c4.plantuml[]
-----
-
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam,
-eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+bla bla
 
 .Use Cases für den Microservice "kunde"
 [plantuml,use-cases,svg]
@@ -54,10 +45,9 @@ eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dic
 include::./use-cases.plantuml[]
 ----
 
-Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vestibulum ac diam sit amet quam vehicula
-elementum sed sit amet dui.
+bla bla
 
-.Komponenten für die REST-Schnittstelle
+.Komponenten des Microservice "kunde"
 [plantuml,komponenten,svg]
 ----
 include::./komponenten.plantuml[]
@@ -65,72 +55,66 @@ include::./komponenten.plantuml[]
 
 === Die REST-Schnittstelle
 
-Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Donec sollicitudin molestie malesuada.
+bla bla
 
 ."KundeGetController" für Lesezugriffe an der REST-Schnittstelle
 [plantuml,KundeGetController,svg]
 ----
-include::./KundeGetController.plantuml[]
+include::./ProduktGetController.plantuml[]
 ----
 
 .Die Klasse "KundeModel" für den Datenaustausch bei GET
 [plantuml,KundeModel,svg]
 ----
-include::./KundeModel.plantuml[]
+include::./ProduktModel.plantuml[]
 ----
 
 ."KundeWriteController" für Schreibzugriffe an der REST-Schnittstelle
 [plantuml,KundeWriteController,svg]
 ----
-include::./KundeWriteController.plantuml[]
-----
-
-.Die Klasse "KundeUserDTO" für den Datenaustausch bei POST
-[plantuml,KundeUserDTO,svg]
-----
-include::./KundeUserDTO.plantuml[]
+include::./ProduktWriteController.plantuml[]
 ----
 
 === Der Anwendungskern
 
-Proin eget tortor risus. Curabitur aliquet quam id dui posuere blandit.
+bla bla
 
-."KundeReadService" im Anwendungskern
+.Die Service-Klasse "KundeReadService" im Anwendungskern
 [plantuml,KundeReadService,svg]
 ----
-include::./KundeReadService.plantuml[]
+include::./ProduktReadService.plantuml[]
 ----
 
-."KundeWriteService" im Anwendungskern
+bla bla
+
+.Die Service-Klasse "KundeWriteService" im Anwendungskern
 [plantuml,KundeWriteService,svg]
 ----
-include::./KundeWriteService.plantuml[]
+include::./ProduktWriteService.plantuml[]
 ----
 
 === Die Entity-Klassen
 
-Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Donec rutrum congue leo eget malesuada.
+bla bla
 
 .Die Entity-Klasse "Kunde" für Kundendaten
 [plantuml,Kunde,svg]
 ----
-include::./Kunde.plantuml[]
-----
-
-=== ER-Diagramm
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-
-.ER-Diagramm
-[plantuml,ER-Diagramm,svg]
-----
-include::./er-diagramm.plantuml[]
+include::./Produkt.plantuml[]
 ----
 
 == Programmierrichtlinien
 
 TIP: Als Studierende/r sollte man sich frühzeitig an Programmierrichtlinien
      gewöhnen. Das hinterlässt im späteren Praxissemester einen professionellen Eindruck.
+
+=== Kotlin
+
+Für die Entwicklung mit *Kotlin* sind folgende Styleguides empfehlenswert:
+
+[horizontal]
+_Kotlin_:: https://kotlinlang.org/docs/reference/coding-conventions.html
+_Android_:: https://developer.android.com/kotlin/style-guide
 
 === Java
 
@@ -139,26 +123,14 @@ _Google_:: https://google.github.io/styleguide/javaguide.html
 _Microsoft Azure_:: https://azure.github.io/azure-sdk/java_introduction.html
 _Mozilla_:: https://firefox-source-docs.mozilla.org/code-quality/coding-style/coding_style_java.html
 
-=== SQL
-
-[horizontal]
-_SQL_:: https://www.sqlstyle.guide
-
 === TypeScript und JavaScript
 
 [horizontal]
 _Microsoft_:: https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
-_Angular_:: https://angular.io/guide/style-guide.html
-_Google_:: https://google.github.io/styleguide/tsguide.html
+_Angular_:: https://angular.io/docs/ts/latest/guide/style-guide.html
 _React_:: https://github.com/airbnb/javascript/tree/master/react
 
-=== Python
+=== SQL
 
 [horizontal]
-_Google_:: https://google.github.io/styleguide/pyguide.html
-
-=== Kotlin
-
-[horizontal]
-_Kotlin_:: https://kotlinlang.org/docs/coding-conventions.html
-_Android_:: https://developer.android.com/kotlin/style-guide
+_SQL_:: https://www.sqlstyle.guide

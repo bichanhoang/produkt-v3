@@ -54,7 +54,7 @@ VALUES
     ('20000000-0000-0000-0000-000000000050','55555','Essen'),
     ('20000000-0000-0000-0000-000000000060','66666','Freiburg');
 
-INSERT INTO kunde (id, version, nachname, email, kategorie, has_newsletter, geburtsdatum, homepage, geschlecht, familienstand, umsatz_id, adresse_id, username, erzeugt, aktualisiert)
+INSERT INTO produkt (id, version, nachname, email, kategorie, has_newsletter, geburtsdatum, homepage, geschlecht, familienstand, umsatz_id, adresse_id, username, erzeugt, aktualisiert)
 VALUES
     -- admin
     ('00000000-0000-0000-0000-000000000000',0,'Admin','admin@acme.com',0,true,'2022-01-31','https://www.acme.com','W','VH','10000000-0000-0000-0000-000000000000','20000000-0000-0000-0000-000000000000','admin','2022-01-31 00:00:00','2022-01-31 00:00:00'),

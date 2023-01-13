@@ -14,19 +14,15 @@
 ' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @startuml Komponenten
 
+left to right direction
+
 package com.acme.kunde #DDDDDD {
     package rest <<boundary>> #FFFFFF {
-        [@RestController\nKundeGetController] as KundeGetController
-        [@RestController\nKundeWriteController] as KundeWriteController
+        [@RestController\nKundeReadController] as KundeReadController
     }
 
     package service <<control>> #FFFFFF {
         [@Service\nKundeReadService] as KundeReadService
-        [@Service\nKundeWriteService] as KundeWriteService
-    }
-
-    package repository <<control>> #FFFFFF {
-        [KundeRepository]
     }
 
     package entity <<entity>> #FFFFFF {
@@ -34,37 +30,11 @@ package com.acme.kunde #DDDDDD {
     }
 }
 
-cloud {
-    [Spring Data]
-}
+RESTClient ~~> [KundeReadController]
 
-database "kunde (PostgreSQL)" {
-    [Tabelle kunde]
-    [Tabelle umsatz]
-    [Tabelle adresse]
-
-    [Tabelle kunde] -[hidden]-> [Tabelle adresse]
-    [Tabelle kunde] -[hidden]-> [Tabelle umsatz]
-}
-
-RESTClient ~~> [KundeGetController]
-RESTClient ~~> [KundeWriteController]
-
-[KundeGetController] --> [KundeReadService]
-[KundeWriteController] --> [KundeWriteService]
-[KundeReadService] --> [KundeRepository]
-[KundeWriteService] --> [KundeRepository]
-
-[KundeGetController] .left.> [Kunde]
-[KundeWriteController] ..> [Kunde]
-[KundeReadService] .left.> [Kunde]
-[KundeWriteService] ..> [Kunde]
-[KundeRepository] ..> [Kunde]
-
-[KundeRepository] ~right~> [Spring Data]
-[Spring Data] ~~> [Tabelle kunde]
-[Spring Data] ~~> [Tabelle adresse]
-[Spring Data] ~~> [Tabelle umsatz]
+[KundeReadController] o--> [KundeReadService]
+[KundeReadController] .up.> [Kunde]
+[KundeReadService] ..> [Kunde]
 
 footer (c) Jürgen Zimmermann
 

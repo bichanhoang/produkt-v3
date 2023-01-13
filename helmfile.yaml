@@ -18,10 +18,10 @@
 #           helmfile destroy
 
 releases:
-  - name: kunde
+  - name: produkt
     namespace: acme
-    chart: extras/kunde
-    values: [extras/kunde/dev.yaml]
-    #values: [extras/kunde/dev.yaml, extras/kunde/dev-mysql.yaml]
-    #values: [extras/kunde/dev.yaml, extras/kunde/dev-h2.yaml]
+    chart: extras/produkt
+    values: [extras/produkt/dev.yaml]
+    #values: [extras/produkt/dev.yaml, extras/produkt/dev-mysql.yaml]
+    #values: [extras/produkt/dev.yaml, extras/produkt/dev-h2.yaml]
     #wait: true

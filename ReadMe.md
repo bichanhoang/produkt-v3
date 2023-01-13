@@ -69,12 +69,12 @@ Wenn man den eigenen Microservice direkt mit Windows - nicht mit Kubernetes -
 laufen lässt, kann man PostgreSQL und das Administrationswerkzeug pgadmin
 einfach mit _Docker Compose_ starten und später auch herunterfahren.
 
-> ❗ Vor dem 1. Start von PostgreSQL muss das Skript `create-db-kunde.sql`
+> ❗ Vor dem 1. Start von PostgreSQL muss das Skript `create-db-produkt.sql`
 > aus dem Verzeichnis `extras\postgres\sql` nach
 > `C:\Zimmermann\volumes\postgres\sql` kopieren und die Anleitung ausführen.
 > Für die Windows-Verzeichnisse `C:\Zimmermann\volumes\postgres\data`,
 > `C:\Zimmermann\volumes\postgres\tablespace` und
-> `C:\Zimmermann\volumes\postgres\tablespace\kunde` muss außerdem Vollzugriff
+> `C:\Zimmermann\volumes\postgres\tablespace\produkt` muss außerdem Vollzugriff
 > gewährt werden, was über das Kontextmenü mit _Eigenschaften_ und den
 > Karteireiter _Sicherheit_ für die Windows-Gruppe _Benutzer_ eingerichtet
 > werden kann.
@@ -89,14 +89,14 @@ einfach mit _Docker Compose_ starten und später auch herunterfahren.
     cd extras\postgres
     docker compose exec postgres bash
       chown postgres:postgres /var/lib/postgresql/tablespace
-      chown postgres:postgres /var/lib/postgresql/tablespace/kunde
+      chown postgres:postgres /var/lib/postgresql/tablespace/produkt
     docker compose down
     # in docker-compose.yaml den User "postgres" wieder aktivieren, d.h. Kommentar entfernen
     # 1. Shell:
     docker compose up postgres
     # 2. Shell:
     docker compose exec postgres bash
-      psql --dbname=postgres --username=postgres --file=/sql/create-db-kunde.sql
+      psql --dbname=postgres --username=postgres --file=/sql/create-db-produkt.sql
 
     # 2. Shell: Herunterfahren
     docker compose down
@@ -105,7 +105,7 @@ einfach mit _Docker Compose_ starten und später auch herunterfahren.
 Der Name des Docker-Containers lautet `postgres` und ebenso lautet der
 _virtuelle Rechnername_ `postgres`. Der virtuelle Rechnername `postgres`
 wird später auch als Service-Name für PostgreSQL in Kubernetes verwendet.
-Der neue Datenbank-User `kunde` wurde zum Owner der Datenbank `kunde`.
+Der neue Datenbank-User `produkt` wurde zum Owner der Datenbank `produkt`.
 
 Statt eine PowerShell zu verwenden, kann man Docker Compose auch direkt in
 IntelliJ aufrufen, indem man über das Kontextmenü ("rechte Maustaste") den
@@ -114,9 +114,9 @@ sieht man dann unterhalb von _Docker_ den Eintrag _Docker-compose: postgres_ mit
 dem Service _postgres_.
 
 Jetzt läuft der PostgreSQL- bzw. DB-Server. Die Datenbank-URL für den eigenen
-Microservice als DB-Client lautet: `postgresql://localhost/kunde`, dabei ist
+Microservice als DB-Client lautet: `postgresql://localhost/produkt`, dabei ist
 `localhost` aus Windows-Sicht der Rechnername, der Port defaultmäßig `5432`
-und der Datenbankname `kunde`.
+und der Datenbankname `produkt`.
 
 Außerdem kann _pgadmin_ zur Administration verwendet werden. pgadmin läuft
 ebenfalls als Docker-Container und ist über ein virtuelles Netzwerk mit dem
@@ -196,11 +196,11 @@ Wenn man den eigenen Microservice direkt mit Windows - nicht mit Kubernetes -
 laufen lässt, kann man MySQL und das Administrationswerkzeug phpMyAdmin einfach
 mit _Docker Compose_ starten und später auch herunterfahren.
 
-> ❗ Vor dem 1. Start von MySQL muss man das Skript `create-db-kunde.sql` aus
+> ❗ Vor dem 1. Start von MySQL muss man das Skript `create-db-produkt.sql` aus
 > dem Projektverzeichnis `extras\mysql\sql` nach
 > `C:\Zimmermann\volumes\mysql\sql` kopieren und die Anleitung ausführen.
-> Dabei wird der DB-User `kunde` und dessen Datenbank `kunde` angelegt, d.h.
-> der neue Datenbank-User `kunde` wird zum Owner der Datenbank `kunde`.
+> Dabei wird der DB-User `produkt` und dessen Datenbank `produkt` angelegt, d.h.
+> der neue Datenbank-User `produkt` wird zum Owner der Datenbank `produkt`.
 > Dazu muss man sich mit dem Docker-Container mit Namen `mysql` verbinden und
 > im Docker-Container das SQL-Skript ausführen:
 
@@ -208,10 +208,10 @@ mit _Docker Compose_ starten und später auch herunterfahren.
     cd extras\mysql
     docker compose up mysql
 
-    # 2. Shell: DB-User "kunde" und dessen Datenbank "kunde" anlegen
+    # 2. Shell: DB-User "produkt" und dessen Datenbank "produkt" anlegen
     cd extras\mysql
     docker compose exec mysql sh
-      mysql --user=root --password=p < /sql/create-db-kunde.sql
+      mysql --user=root --password=p < /sql/create-db-produkt.sql
 
     # 2. Shell: Herunterfahren
     docker compose down
@@ -224,9 +224,9 @@ sieht man dann unterhalb von _Docker_ den Eintrag _Docker-compose: mysql_ mit
 dem Service _mysql_.
 
 Jetzt läuft der DB-Server. Die Datenbank-URL für den eigenen Microservice als
-DB-Client lautet: `mysql://localhost/kunde`. Dabei ist `localhost` aus
+DB-Client lautet: `mysql://localhost/produkt`. Dabei ist `localhost` aus
 Windows-Sicht der Rechnername, der Port defaultmäßig `3306` und der
-Datenbankname `kunde`.
+Datenbankname `produkt`.
 
 Außerdem kann _phpMyAdmin_ zur Administration verwendet werden. phpMyAdmin läuft
 ebenfalls als Docker-Container und ist über ein virtuelles Netzwerk mit dem
@@ -312,7 +312,7 @@ Der virtuelle Rechnername wird später auch als Service-Name für
 Oracle in Kubernetes verwendet.
 
 > ❗ Nach dem 1. Start des DB-Servers muss man einmalig den Datenbank-User
-> `kunde`, den Tablespace `kundespace` und das Schema `kunde` für den gleichnamigen
+> `produkt`, den Tablespace `kundespace` und das Schema `produkt` für den gleichnamigen
 > User anlegen. Dazu muss man ggf. _SQLcl_ von https://www.oracle.com/de/tools/downloads/sqlcl-downloads.html
 > herunterladen und die ZIP-Datei in `C:\Zimmermann` auspacken, so dass es die
 > Datei `C:\Zimmermann\sqlcl\bin\sql.exe` gibt. Außerdem muss man die Umgebungsvariable
@@ -321,7 +321,7 @@ Oracle in Kubernetes verwendet.
 
 ```powershell
     cd extras\oracle
-    .\create-kunde.ps1
+    .\create-produkt.ps1
 ```
 
 Statt Docker Compose (s.o.) über die PowerShell zu starten, kann man Docker Compose
@@ -331,10 +331,10 @@ sieht man dann unterhalb von _Docker_ den Eintrag _Docker-compose: oracle_ mit
 dem Service _oracle_.
 
 Die Datenbank-URL für den eigenen Microservice und auch für _SQL Developer_
-als grafischen DB-Client lautet: `oracle:thin:kunde/p@localhost/XEPDB1`.
+als grafischen DB-Client lautet: `oracle:thin:produkt/p@localhost/XEPDB1`.
 Dabei ist
 
-- `kunde` der Benutzername,
+- `produkt` der Benutzername,
 - `p` das Passwort
 - `localhost` aus Windows-Sicht der Rechnername
 - der Port defaultmäßig `1521` und
@@ -496,7 +496,7 @@ notwendig.
 ### WICHTIG: Schreibrechte für die Logdatei
 
 Wenn die Anwendung in Kubernetes läuft, ist die Log-Datei `application.log` im
-Verzeichnis `C:\Zimmermann\volumes\kunde-v2`. Das bedeutet auch zwangsläufig,
+Verzeichnis `C:\Zimmermann\volumes\produkt-v2`. Das bedeutet auch zwangsläufig,
 dass diese Datei durch den _Linux-User_ vom (Kubernetes-) Pod angelegt und
 geschrieben wird, wozu die erforderlichen Berechtigungen in Windows gegeben
 sein müssen.
@@ -528,7 +528,7 @@ Mit _dive_ kann man dann ein Docker-Image und die einzelnen Layer inspizieren:
 
 ```powershell
     cd \Zimmermann\dive
-    .\dive juergenzimmermann\kunde:2.0.0
+    .\dive juergenzimmermann\produkt:2.0.0
 ```
 
 Alternativ kann man auch das Tool Window _Services_ von IntelliJ IDEA verwenden.
@@ -537,7 +537,7 @@ Wenn ein Docker-Image mit Buildpacks gebaut wurde, kann man mit folgendem
 Kommando inspizieren, mit welchen Software-Paketen es gebaut wurde:
 
 ```PowerSkell
-    pack inspect juergenzimmermann/kunde:2.0.0
+    pack inspect juergenzimmermann/produkt:2.0.0
 ```
 
 Mit der PowerShell kann man Docker-Images folgendermaßen auflisten und löschen,
@@ -567,14 +567,14 @@ auf der Basis von _Go_.
 Zunächst muss man z.B. mit dem Gradle-Plugin von Spring Boot ein Docker-Image
 erstellen ([s.o.](#Image-für-Kubernetes-erstellen)).
 
-Die Konfiguration für Helm ist im Unterverzeichnis `extras\kunde`. Die
+Die Konfiguration für Helm ist im Unterverzeichnis `extras\produkt`. Die
 Metadaten für das _Helm-Chart_ sind in der Default-Datei `Chart.yaml` und die
 einzelnen Manifest-Dateien für das Helm-Chart sind im Unterverzeichis
 `templates` im Format YAML. In diesen Dateien gibt es Platzhalter ("templates")
 mit der Syntax der Programmiersprache Go. Die Defaultwerte für diese Platzhalter
 sind in der Default-Datei `values.yaml` und können beim Installieren durch weitere
 YAML-Dateien überschrieben werden. Im unten stehenden Beispiel wird so ein
-_Helm-Service_ dem _Release-Namen_ kunde mit dem Helm-Chart `Chart.yaml` aus
+_Helm-Service_ dem _Release-Namen_ produkt mit dem Helm-Chart `Chart.yaml` aus
 dem aktuellen Verzeicnis in Kubernetes installiert. Dabei muss die Umgebungsvariable
 `HELM_NAMESPACE` auf den Wert `acme` gesetzt sein.
 
@@ -582,27 +582,27 @@ dem aktuellen Verzeicnis in Kubernetes installiert. Dabei muss die Umgebungsvari
     # Ueberpruefen, ob die Umgebungsvariable HELM_NAMESPACE gesetzt ist:
     Write-Output $env:HELM_NAMESPACE
 
-    cd extras\kunde
+    cd extras\produkt
     helm lint --strict .
     helm-docs
 
     # einfacher: helmfile oder Skaffold
-    helm install kunde . -f values.yaml -f dev.yaml
+    helm install produkt . -f values.yaml -f dev.yaml
     helm list
-    helm status kunde
+    helm status produkt
 
     # MySQL statt PostgreSQL:
-    helm install kunde . -f values.yaml -f dev.yaml -f dev-mysql.yaml
+    helm install produkt . -f values.yaml -f dev.yaml -f dev-mysql.yaml
 
     # H2 statt PostgreSQL:
-    helm install kunde . -f values.yaml -f dev.yaml -f dev-h2.yaml
+    helm install produkt . -f values.yaml -f dev.yaml -f dev-h2.yaml
 ```
 
 Später kann das Helm-Chart mit dem Release-Namen _kunde_ auch deinstalliert werden:
 
 ```powershell
-    cd extras\kunde
-    helm uninstall kunde
+    cd extras\produkt
+    helm uninstall produkt
 ```
 
 ### Installation mit helmfile und Port Forwarding
@@ -611,9 +611,9 @@ Später kann das Helm-Chart mit dem Release-Namen _kunde_ auch deinstalliert wer
     helmfile apply
 
     helm list
-    helm status kunde
+    helm status produkt
 
-    kubectl describe svc/kunde -n acme
+    kubectl describe svc/produkt -n acme
     # in Lens: Network > Endpoints
     kubectl get ep -n acme
 
@@ -641,7 +641,7 @@ Name _kunde_ aufgerufen wird. Alternativ kann auch das Skript `port-forward.ps1`
 aufgerufen werden.
 
 ```powershell
-    kubectl port-forward service/kunde 8080 --namespace acme
+    kubectl port-forward service/produkt 8080 --namespace acme
 ```
 
 Nach dem Port-Forwarding kann man auf den in Kubernetes laufenden Service zugreifen:
@@ -652,41 +652,41 @@ Nach dem Port-Forwarding kann man auf den in Kubernetes laufenden Service zugrei
 
 Ein _Ingress Controller_ ist zuständig für das _Traffic Management_ bzw. Routing
 der eingehenden Requests zu den Kubernetes Services. Ein solcher Ingress Controller
-wurde durch `extras\kunde\templates\ingress.yaml` installiert und kann von
+wurde durch `extras\produkt\templates\ingress.yaml` installiert und kann von
 außen z.B. folgendermaßen aufgerufen werden, falls der eigentliche Kommunikationsendpunkt
 in Kubernetes verfügbar ist.
 
 ```powershell
-    # ca. 2. Min. warten, bis der Endpoint bei kunde verfuegbar ist (in Lens: Network > Endpoints)
+    # ca. 2. Min. warten, bis der Endpoint bei produkt verfuegbar ist (in Lens: Network > Endpoints)
     kubectl get ep -n acme
 
     $secpasswd = ConvertTo-SecureString p -AsPlainText -Force
     $credential = New-Object System.Management.Automation.PSCredential('admin', $secpasswd)
 
     # GET-Request fuer REST-Schnittstelle mit Invoke-WebRequest:
-    $response = Invoke-WebRequest https://kubernetes.docker.internal/kunden/00000000-0000-0000-0000-000000000001 `
+    $response = Invoke-WebRequest https://kubernetes.docker.internal/produkte/00000000-0000-0000-0000-000000000001 `
         -Headers @{Accept = 'application/hal+json'} `
         -SslProtocol Tls13 -HttpVersion 2 -SkipCertificateCheck `
         -Authentication Basic -Credential $credential
     Write-Output $response.RawContent
 
     # GraphQL mit Invoke-WebRequest:
-    $response = Invoke-WebRequest https://kubernetes.docker.internal/kunden/graphql `
-        -Method Post -Body '{"query": "query { kunde(id: \"00000000-0000-0000-0000-000000000001\") { nachname } }"}' `
+    $response = Invoke-WebRequest https://kubernetes.docker.internal/produkte/graphql `
+        -Method Post -Body '{"query": "query { produkt(id: \"00000000-0000-0000-0000-000000000001\") { name } }"}' `
         -ContentType 'application/json' `
         -SslProtocol Tls13 -HttpVersion 2 -SkipCertificateCheck `
         -Authentication Basic -Credential $credential
     Write-Output $response.RawContent
 
     # GET-Request fuer REST-Schnittstelle mit cURL:
-    curl --verbose --user admin:p --tlsv1.3 --http2 --insecure https://kubernetes.docker.internal/kunden/00000000-0000-0000-0000-000000000001
+    curl --verbose --user admin:p --tlsv1.3 --http2 --insecure https://kubernetes.docker.internal/produkte/00000000-0000-0000-0000-000000000001
 
     # GraphQL mit cURL:
-    curl --verbose --data '{"query": "query { kunde(id: \"00000000-0000-0000-0000-000000000001\") { nachname } }"}' `
+    curl --verbose --data '{"query": "query { produkt(id: \"00000000-0000-0000-0000-000000000001\") { name } }"}' `
         --header 'Content-Type: application/json' `
         --tlsv1.3 --insecure `
         --user admin:p `
-        https://kubernetes.docker.internal/kunden/graphql
+        https://kubernetes.docker.internal/produkte/graphql
 ```
 
 ### Continuous Deployment mit Skaffold
@@ -716,9 +716,9 @@ Das Deployment wird mit Skaffold nun folgendermaßen durchgeführt und kann mit
     skaffold dev
 
     helm list
-    helm status kunde
+    helm status produkt
 
-    kubectl describe svc/kunde -n acme
+    kubectl describe svc/produkt -n acme
     # in Lens: Network > Endpoints
     kubectl get ep -n acme
 

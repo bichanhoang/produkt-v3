@@ -38,12 +38,12 @@ server:
   shutdown: graceful
 
 spring:
-  application.name: kunde
+  application.name: produkt
   aop.proxy-target-class: false
   datasource:
-    url: jdbc:postgresql://localhost/kunde
-    #url: jdbc:mysql://localhost/kunde
-    username: kunde
+    url: jdbc:postgresql://localhost/produkt
+    #url: jdbc:mysql://localhost/produkt
+    username: produkt
     password: Change Me!
   flyway:
     locations: classpath:db/migration/{vendor}
@@ -60,7 +60,7 @@ spring:
       # https://docs.jboss.org/hibernate/orm/6.1/javadocs/org/hibernate/cfg/AvailableSettings.html
       # https://docs.jboss.org/hibernate/orm/6.1/javadocs/org/hibernate/cfg/Environment.html
       hibernate:
-        #default_schema: kunde
+        #default_schema: produkt
         jdbc:
           time_zone: Europe/Berlin
           batch_versioned_data: true
@@ -113,7 +113,7 @@ info.app:
 
 management:
   endpoints.web.exposure.include: "*"
-  metrics.tags.application: kunde
+  metrics.tags.application: produkt
   # Trace every action
   # https://springbootlearning.medium.com/using-micrometer-to-trace-your-spring-boot-app-1fe6ff9982ae
   tracing.sampling.probability: "1.0"

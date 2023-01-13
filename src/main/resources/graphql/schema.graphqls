@@ -1,122 +1,69 @@
-# Copyright (C) 2021 - present Juergen Zimmermann, Hochschule Karlsruhe
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# Description in Markdown-Syntax
+# This file was generated based on ".graphqlconfig". Do not edit manually.
 
 schema {
   query: Query
   mutation: Mutation
 }
 
-"Suche nach Kundendaten"
+"Suche nach Produktdaten"
 type Query {
-  "Suche Kundendaten anhand der ID"
-  kunde(id: ID!): Kunde
-
-  "Suche Kundendaten anhand des Nachnamens oder der Emailadresse"
-  kunden(input: Suchkriterien): [Kunde!]
+  "Suche Produktdaten anhand der ID"
+  produkt(id: ID!): Produkt
+  "Suche Produktdaten anhand des Namens"
+  produkte(input: Suchkriterien): [Produkt!]
 }
 
 type Mutation {
-  "Einen neuen Kundendatensatz anlegen"
-  create(input: KundeInput!): CreatePayload
+  "Einen neuen Produktdatensatz anlegen"
+  create(input: ProduktInput!): CreatePayload
 }
 
-# https://spec.graphql.org/draft/#sec-Types
-# https://www.graphql-scalars.dev/docs/scalars/email-address
-# https://www.graphql-scalars.dev/docs/scalars/local-date
-# https://www.graphql-scalars.dev/docs/scalars/currency
-# enum als String, damit toSting() vom Enum-Wert aufgerufen wird
-"Eigenschaften eines Kunde-Datensatzes mit untergeordneten Eigenschaften"
-type Kunde {
-  id: ID!
-  version: Int!
-  nachname: String!
-  email: String!
-  kategorie: Int!
-  hasNewsletter: Boolean!
-  geburtsdatum: String
+"Eigenschaften eines Produkt-Datensatzes mit untergeordneten Eigenschaften"
+type Produkt {
+  "ID des Produktes"
+  id: ID
+  "Name des Produktes"
+  name: String!
+  " https://www.graphql-scalars.dev/docs/scalars/local-date"
+  erscheinungsdatum: String
   homepage: String
-  geschlecht: String
-  familienstand: String
-  interessen: [String!]
-  adresse: Adresse!
-  username: String!
+  umsatz: Umsatz
 }
 
-type Adresse {
-  plz: String!
-  ort: String!
-}
-
-# https://spec.graphql.org/draft/#sec-Input-Objects
-"Suchkriterien für die Query 'kunden'"
-input Suchkriterien {
-  nachname: String
-  email: String
-}
-
-input KundeInput {
-  nachname: String!
-  email: String!
-  kategorie: Int!
-  hasNewsletter: Boolean!
-  geburtsdatum: String
-  homepage: String
-  geschlecht: Geschlecht
-  familienstand: Familienstand
-  interessen: [Interesse!]
-  umsatz: UmsatzInput
-  adresse: AdresseInput!
-  user: UserInput!
-}
-
-enum Geschlecht {
-    WEIBLICH
-    MAENNLICH
-    DIVERS
-}
-
-enum Familienstand {
-    LEDIG
-    VERHEIRATET
-    GESCHIEDEN
-    VERWITWET
-}
-
-enum Interesse {
-    SPORT
-    LESEN
-    REISEN
-}
-
-input UmsatzInput {
+type Umsatz {
+  "Der Betrag"
   betrag: String!
+  "Die Währung"
   waehrung: String!
 }
 
-input AdresseInput {
-  plz: String!
-  ort: String!
+"Suchkriterien für die Query 'produkte'"
+input Suchkriterien {
+  "Name der gesuchten Produkte"
+  name: String
 }
 
-input UserInput {
-  username: String!
-  password: String!
+"Eingabedaten für einen neues Produkt"
+input ProduktInput {
+  "Name des neuen Produktes"
+  name: String!
+  "Erscheinungsdatum des neuen Produktes"
+  erscheinungsdatum: String
+  homepage: String
+  "Umsatzangabe zum neuen Produkt"
+  umsatz: UmsatzInput
 }
 
+"Umsatzeingabe für ein Produkt: Neuanlegen oder Ändern"
+input UmsatzInput {
+  "Betrag"
+  betrag: String!
+  "Währung"
+  waehrung: String!
+}
+
+"Rückgabetyp beim Neuanlegen eines Produktes"
 type CreatePayload {
+  "ID des neu angelegten Produktes"
   id: String!
 }

@@ -29,9 +29,9 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: kunde
-              app.kubernetes.io/name: kunde
-              app.kubernetes.io/instance: kunde
+              app: produkt
+              app.kubernetes.io/name: produkt
+              app.kubernetes.io/instance: produkt
       ports:
         - port: {{ .Chart.Name }}
           protocol: TCP
