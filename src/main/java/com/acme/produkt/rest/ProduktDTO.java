@@ -21,6 +21,7 @@ import com.acme.produkt.entity.Umsatz;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * ValueObject für das Neuanlegen und Ändern eines neuen Produktes.
@@ -37,7 +38,8 @@ record ProduktDTO(
     String name,
     LocalDate erscheinungsdatum,
     URL homepage,
-    UmsatzDTO umsatz
+    UmsatzDTO umsatz,
+    UUID angestellterId
 ) {
     /**
      * Konvertierung in ein Objekt des Anwendungskerns.
@@ -60,6 +62,7 @@ record ProduktDTO(
             .erscheinungsdatum(erscheinungsdatum)
             .homepage(homepage)
             .umsatz(umsatzEntity)
+            .angestellterId(angestellterId)
             .erzeugt(null)
             .aktualisiert(null)
             .build();

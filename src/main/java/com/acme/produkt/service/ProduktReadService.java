@@ -17,8 +17,7 @@
 package com.acme.produkt.service;
 
 import com.acme.produkt.entity.Produkt;
-import com.acme.produkt.repository.ProduktRepository;
-import com.acme.produkt.repository.SpecBuilder;
+import com.acme.produkt.repository.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +39,26 @@ import java.util.UUID;
 @Slf4j
 public final class ProduktReadService {
     private final ProduktRepository repo;
-
+    private final AngestellterRepository angestellterRepo;
     private final SpecBuilder specBuilder;
+
+    /**
+     * Alle Bestellungen ermitteln.
+     *
+     * @return Alle Bestellungen.
+     */
+    public Collection<Produkt> findAll() {
+        final var produkte = repo.findAll();
+        produkte.forEach(produkt -> {
+            // TODO Caching der bisher gefundenen Nachnamen
+            final var produktId = produkt.getAngestellterId();
+            final var angestellter = fetchAngestellterById(produktId);
+            final var email = fetchEmailById(produktId);
+            produkt.setAngestellterNachname(angestellter.nachname());
+            produkt.setAngestellterEmail(email);
+        });
+        return produkte;
+    }
 
     /**
      * Ein Produkt anhand seiner ID suchen.
@@ -55,9 +72,15 @@ public final class ProduktReadService {
         log.debug("findById: id={}", id);
         final var produktOpt = repo.findById(id);
 
-        // admin: Kundendaten evtl. nicht gefunden
-        final var produkt = produktOpt.orElseThrow(() -> new NotFoundException(id));
-        log.debug("findById: {}", produkt);
+        if (produktOpt.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        final var produkt = produktOpt.orElseThrow(NotFoundException::new);
+        final var nachname = fetchAngestellterById(produkt.getAngestellterId()).nachname();
+        produkt.setAngestellterNachname(nachname);
+        final var email = fetchEmailById(produkt.getAngestellterId());
+        produkt.setAngestellterEmail(email);
         return produkt;
     }
 
@@ -114,5 +137,60 @@ public final class ProduktReadService {
         }
         log.debug("findNamenByPrefix: {}", namen);
         return namen;
+    }
+
+    /**
+     * Produkte zur Kunde-ID suchen.
+     *
+     * @param angestellterId Die Id des gegebenen Angestellten.
+     * @return Die gefundenen Produkte.
+     * @throws NotFoundException Falls keine Produkte gefunden wurden.
+     */
+    public Collection<Produkt> findByAngestellterId(final UUID angestellterId) {
+        log.debug("findByAngestellterId: angestellterId={}", angestellterId);
+
+        final var produkte = repo.findByAngestellterId(angestellterId);
+        if (produkte.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        final var kunde = fetchAngestellterById(angestellterId);
+        final var nachname = kunde == null ? null : kunde.nachname();
+        final var email = fetchEmailById(angestellterId);
+        log.trace("findByAngestellterId: nachname={}, email={}", nachname, email);
+        produkte.forEach(produkt -> {
+            produkt.setAngestellterNachname(nachname);
+            produkt.setAngestellterEmail(email);
+        });
+
+        log.trace("findByAngestellterId: produkte={}", produkte);
+        return produkte;
+    }
+
+    private Angestellter fetchAngestellterById(final UUID angestellterId) {
+        log.debug("findAngestellterById: angestellterId={}", angestellterId);
+        try {
+            final var angestellter = angestellterRepo
+                .findById(angestellterId)
+                .orElse(new Angestellter("N/A", "n.a@acme.com"));
+            log.debug("findKundeById: {}", angestellter);
+            return angestellter;
+        } catch (final AngestellterServiceException ex) {
+            log.debug("findKundeById: {}", ex.getRestException().getClass().getSimpleName());
+            return new Angestellter("Exception", "exception@acme.com");
+        }
+    }
+
+    private String fetchEmailById(final UUID angestellterId) {
+        log.debug("findEmailById: angestellterId={}", angestellterId);
+        final var emailOpt = angestellterRepo.findEmailById(angestellterId);
+        String email;
+        try {
+            email = emailOpt.orElse("N/A");
+        } catch (final AngestellterServiceException ex) {
+            log.debug("findEmailById: message = {}", ex.getGraphQlException().getMessage());
+            email = "N/A";
+        }
+        return email;
     }
 }

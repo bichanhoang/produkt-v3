@@ -31,9 +31,17 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,8 +50,7 @@ import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NOT_MODIFIED;
-import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.status;
+import static org.springframework.http.ResponseEntity.*;
 
 
 /**
@@ -136,14 +143,29 @@ final class ProduktGetController {
     @Operation(summary = "Suche mit Suchkriterien", tags = "Suchen")
     @ApiResponse(responseCode = "200", description = "CollectionModel mit dem Produkten")
     @ApiResponse(responseCode = "404", description = "Keine Produkte gefunden")
-    CollectionModel<? extends ProduktModel> find(
-        @RequestParam @NonNull final MultiValueMap<String, String> suchkriterien,
+    ResponseEntity<CollectionModel<? extends ProduktModel>> find(
+        @RequestParam @NonNull final Map<String, String> suchkriterien,
         final HttpServletRequest request
     ) {
         log.debug("find: suchkriterien={}", suchkriterien);
+        if (suchkriterien.size() > 1) {
+            return notFound().build();
+        }
+
+        final Collection<Produkt> produkte;
+        if (suchkriterien.isEmpty()) {
+            produkte = service.findAll();
+        } else {
+            final var angestellterIdStr = suchkriterien.get("angestellterId");
+            if (angestellterIdStr == null) {
+                return notFound().build();
+            }
+            final var angestellterId = UUID.fromString(angestellterIdStr);
+            produkte = service.findByAngestellterId(angestellterId);
+        }
 
         final var baseUri = uriHelper.getBaseUri(request).toString();
-        final var models = service.find(suchkriterien)
+        final var models = produkte
             .stream()
             .map(produkt -> {
                 final var model = new ProduktModel(produkt);
@@ -152,7 +174,12 @@ final class ProduktGetController {
             })
             .toList();
         log.debug("find: {}", models);
-        return CollectionModel.of(models);
+
+        if (models.isEmpty()) {
+            return notFound().build();
+        }
+
+        return ok(CollectionModel.of(models));
     }
 
     /**

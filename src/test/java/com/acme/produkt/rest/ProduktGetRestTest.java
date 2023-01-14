@@ -74,11 +74,9 @@ class ProduktGetRestTest {
     private static final String ID_VORHANDEN_PRODUKT = "00000000-0000-0000-0000-000000000001";
     private static final String ID_VORHANDEN_ANDERES_PRODUKT = "00000000-0000-0000-0000-000000000002";
     private static final String ID_NICHT_VORHANDEN = "ffffffff-ffff-ffff-ffff-ffffffffffff";
-
     private static final String NAME_TEIL = "a";
     private static final String NAME_PREFIX_A = "A";
     private static final String NAME_PREFIX_D = "D";
-
     private static final String ID_PATH = "/{id}";
     private static final String NAME_PARAM = "name";
 

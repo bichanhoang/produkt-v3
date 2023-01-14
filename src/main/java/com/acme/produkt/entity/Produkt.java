@@ -113,11 +113,22 @@ public class Produkt {
     @ToString.Exclude
     private Umsatz umsatz;
 
+    // der Spaltenwert referenziert einen Wert aus einer anderen DB
+    @Column(name = "angestellter_id")
+    // @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
+    private UUID angestellterId;
+
     @CreationTimestamp
     private LocalDateTime erzeugt;
 
     @UpdateTimestamp
     private LocalDateTime aktualisiert;
+
+    @Transient
+    private String angestellterNachname;
+
+    @Transient
+    private String angestellterEmail;
 
     /**
      * Produktdaten überschreiben.

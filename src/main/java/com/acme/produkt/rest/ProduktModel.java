@@ -28,6 +28,7 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Model-Klasse für Spring HATEOAS. @lombok.Data fasst die Annotationsn @ToString, @EqualsAndHashCode, @Getter, @Setter
@@ -37,7 +38,7 @@ import java.time.LocalDate;
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */
 @JsonPropertyOrder({
-    "name", "erscheinungsdatum", "homepage", "umsatz"
+    "name", "erscheinungsdatum", "homepage", "umsatz", "angestellterId", "angestellterNachname", "angestellterEmail"
 })
 @Relation(collectionRelation = "produkte", itemRelation = "produkte")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
@@ -49,11 +50,18 @@ class ProduktModel extends RepresentationModel<ProduktModel> {
     private final LocalDate erscheinungsdatum;
     private final URL homepage;
     private final Umsatz umsatz;
+    private final UUID angestellterId;
+    private final String angestellterNachname;
+    private final String angestellterEmail;
+
 
     ProduktModel(final Produkt produkt) {
         name = produkt.getName();
         erscheinungsdatum = produkt.getErscheinungsdatum();
         homepage = produkt.getHomepage();
         umsatz = produkt.getUmsatz();
+        angestellterId = produkt.getAngestellterId();
+        angestellterNachname = produkt.getAngestellterNachname();
+        angestellterEmail = produkt.getAngestellterEmail();
     }
 }

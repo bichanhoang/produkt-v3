@@ -34,7 +34,10 @@ CREATE TABLE IF NOT EXISTS produkt (
   erscheinungsdatum  date CHECK (erscheinungsdatum < current_date),
   homepage      varchar(40),
   umsatz_id     uuid REFERENCES umsatz,
+  angestellter_id      uuid NOT NULL,
   -- https://www.postgresql.org/docs/current/datatype-datetime.html
   erzeugt       timestamp NOT NULL,
   aktualisiert  timestamp NOT NULL
   ) TABLESPACE produktspace;
+
+CREATE INDEX IF NOT EXISTS produkt_angestellter_id_idx ON produkt(angestellter_id) TABLESPACE produktspace;
