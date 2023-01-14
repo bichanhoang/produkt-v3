@@ -18,6 +18,7 @@ package com.acme.produkt.rest;
 
 import com.jayway.jsonpath.JsonPath;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -48,6 +49,7 @@ import reactor.core.publisher.Mono;
 import static com.acme.produkt.dev.DevConfig.DEV;
 import static com.acme.produkt.entity.Produkt.NAME_PATTERN;
 import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.condition.JRE.JAVA_19;
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
@@ -74,11 +76,13 @@ class ProduktGetRestTest {
     private static final String ID_VORHANDEN_PRODUKT = "00000000-0000-0000-0000-000000000001";
     private static final String ID_VORHANDEN_ANDERES_PRODUKT = "00000000-0000-0000-0000-000000000002";
     private static final String ID_NICHT_VORHANDEN = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+    private static final String ANGESTELLTER_ID = "00000000-0000-0000-0000-000000000001";
     private static final String NAME_TEIL = "a";
     private static final String NAME_PREFIX_A = "A";
     private static final String NAME_PREFIX_D = "D";
     private static final String ID_PATH = "/{id}";
     private static final String NAME_PARAM = "name";
+    private static final String ANGESTELLTER_ID_PARAM = "angestellterId";
 
     private final String baseUrl;
     private final WebClient client;
@@ -133,7 +137,7 @@ class ProduktGetRestTest {
     @SuppressWarnings("DataFlowIssue")
     void findAll() {
         // given
-        final MultiValueMap<String, String> suchkriterien = new LinkedMultiValueMap<>();
+        final Map<String, String> suchkriterien = emptyMap();
 
         // when
         final var produkte = produktRepo.getProdukte(suchkriterien).block();
@@ -156,7 +160,7 @@ class ProduktGetRestTest {
         suchkriterien.add(NAME_PARAM, teil);
 
         // when
-        final var produkte = produktRepo.getProdukte(suchkriterien).block();
+        final var produkte = produktRepo.getProdukte(suchkriterien.toSingleValueMap()).block();
 
         // then
         assertThat(produkte).isNotNull();
@@ -181,7 +185,7 @@ class ProduktGetRestTest {
         suchkriterien.add(NAME_PARAM, name);
 
         // when
-        final var produkte = produktRepo.getProdukte(suchkriterien).block();
+        final var produkte = produktRepo.getProdukte(suchkriterien.toSingleValueMap()).block();
 
         // then
         assertThat(produkte).isNotNull();
@@ -233,8 +237,20 @@ class ProduktGetRestTest {
 
             // then
             assertThat(produkt).isNotNull();
-            softly.assertThat(produkt.name()).isNotNull();
-            softly.assertThat(produkt._links().self().href()).endsWith("/" + id);
+            softly.assertThat(produkt.angestellterNachname())
+                .isNotNull()
+                .isNotBlank()
+                .isNotEqualTo("N/A");
+
+            softly.assertThat(produkt.angestellterEmail())
+                .isNotNull()
+                .isNotBlank()
+                .isNotEqualTo("N/A");
+
+            softly.assertThat(produkt._links().self().href())
+                .isNotNull()
+                .isNotBlank()
+                .isEqualTo(baseUrl + '/' + id);
         }
 
         @ParameterizedTest(name = "[{index}] Suche mit vorhandener ID und vorhandener Version: id={0}, version={1}")
@@ -346,5 +362,29 @@ class ProduktGetRestTest {
             Arrays.stream(namen)
                 .forEach(name -> assertThat(name).startsWith(prefix));
         }
+    }
+
+    @ParameterizedTest(name = "[{index}] Suche mit vorhandener Angestellter-ID: angestellterId={0}")
+    @ValueSource(strings = ANGESTELLTER_ID)
+    @DisplayName("Suche mit vorhandener Angestellter-ID")
+    void findByKundeId(final String angestellterId) {
+        // given
+        final var suchkriterien = Map.of(ANGESTELLTER_ID_PARAM, angestellterId);
+
+        // when
+        final var produkte = produktRepo.getProdukte(suchkriterien).block();
+
+        // then
+        assertThat(produkte).isNotNull();
+        final var embedded = produkte._embedded();
+        assertThat(embedded).isNotNull();
+        final var produkteEmbedded = embedded.produkte();
+        assertThat(produkteEmbedded)
+            .isNotNull()
+            .isNotEmpty();
+        produkteEmbedded
+            .stream()
+            .map(produkt -> produkt.angestellterId().toString().toLowerCase())
+            .forEach(kid -> assertThat(kid).isEqualTo(angestellterId));
     }
 }

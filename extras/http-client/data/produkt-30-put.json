@@ -5,5 +5,6 @@
         "betrag": 30,
         "waehrung": "EUR"
     },
-    "homepage": "https://www.acme.de.put"
+    "homepage": "https://www.acme.de.put",
+    "angestellterId": "00000000-0000-0000-0000-000000000001"
 }

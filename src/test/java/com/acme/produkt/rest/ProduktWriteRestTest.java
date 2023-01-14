@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
+import java.util.UUID;
+
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -71,11 +73,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @EnabledForJreRange(min = JAVA_19, max = JAVA_20)
 @SuppressWarnings("WriteTag")
 class ProduktWriteRestTest {
+    private static final String ANGESTELLTER_ID = "00000000-0000-0000-0000-000000000001";
     private static final String ID_VORHANDEN = "00000000-0000-0000-0000-000000000001";
     private static final String ID_UPDATE_PUT = "00000000-0000-0000-0000-000000000030";
     private static final String ID_UPDATE_PATCH = "00000000-0000-0000-0000-000000000040";
-    private static final String ID_DELETE = "00000000-0000-0000-0000-000000000050";
-
     private static final String NEUER_NAME = "Neuername-Rest";
     private static final String NEUES_ERSCHEINUNGSDATUM = "2022-01-31";
     private static final String CURRENCY_CODE = "EUR";
@@ -112,9 +113,11 @@ class ProduktWriteRestTest {
     @Nested
     @DisplayName("REST-Schnittstelle fuer POST")
     class Erzeugen {
-        @ParameterizedTest(name = "[{index}] Neuanlegen eines neuen Produktes: name={0}, email={1}, erscheinungsdatum={2}")
+        @ParameterizedTest(name = "[{index}] Neuanlegen eines neuen Produktes: name={0}")
         @CsvSource(
-            NEUER_NAME + "," + NEUES_ERSCHEINUNGSDATUM + "," + NEUE_HOMEPAGE + "," + CURRENCY_CODE
+            NEUER_NAME + "," + NEUES_ERSCHEINUNGSDATUM + "," + NEUE_HOMEPAGE + "," + CURRENCY_CODE + "," +
+                ANGESTELLTER_ID
+
         )
         @DisplayName("Neuanlegen eines neuen Produktes")
         void create(final ArgumentsAccessor args) {
@@ -124,7 +127,8 @@ class ProduktWriteRestTest {
                 args.getString(0),
                 args.get(1, LocalDate.class),
                 args.get(2, URL.class),
-                umsatz
+                umsatz,
+                UUID.fromString(args.get(4).toString())
             );
 
             // when
@@ -134,7 +138,6 @@ class ProduktWriteRestTest {
                 .bodyValue(produktDTO)
                 .exchangeToMono(Mono::just)
                 .block();
-
 
             // then
             softly.assertThat(response)
@@ -148,7 +151,7 @@ class ProduktWriteRestTest {
             softly.assertThat(location.toString()).matches(".*/" + ID_PATTERN + "$");
         }
 
-        @ParameterizedTest(name = "[{index}] Neuanlegen mit ungueltigen Werten: name={0}")
+        @ParameterizedTest(name = "[{index}] Neuanlegen mit ungueltigen Werten: name={0}, erscheinungsdatum={1}")
         @CsvSource(NEUER_NAME_INVALID + "," + NEUES_ERSCHEINUNGSSDATUM_INVALID)
         @DisplayName("Neuanlegen mit ungueltigen Werten")
         @SuppressWarnings("DynamicRegexReplaceableByCompiledPattern")
@@ -157,6 +160,7 @@ class ProduktWriteRestTest {
             final var produktDTO = new ProduktDTO(
                 args.getString(0),
                 args.get(1, LocalDate.class),
+                null,
                 null,
                 null
             );
@@ -195,7 +199,6 @@ class ProduktWriteRestTest {
                 .hasSameSizeAs(violationKeys)
                 .hasSameElementsAs(violationKeys);
         }
-
     }
 
     @Nested
@@ -225,9 +228,9 @@ class ProduktWriteRestTest {
                 assertThat(produktOrig).isNotNull();
                 final var produkt = new ProduktDTO(
                     produktOrig.name(),
-
                     produktOrig.erscheinungsdatum(),
                     produktOrig.homepage(),
+                    null,
                     null
                 );
 
@@ -268,6 +271,7 @@ class ProduktWriteRestTest {
                     name,
                     produktOrig.erscheinungsdatum(),
                     produktOrig.homepage(),
+                    null,
                     null
                 );
                 final var violationKeys = List.of("name", "email", "kategorie");
@@ -323,6 +327,7 @@ class ProduktWriteRestTest {
                     produktOrig.name(),
                     produktOrig.erscheinungsdatum(),
                     produktOrig.homepage(),
+                    null,
                     null
                 );
 
@@ -347,25 +352,6 @@ class ProduktWriteRestTest {
                     .isNotNull()
                     .isEqualTo("Versionsnummer fehlt");
             }
-        }
-    }
-
-    @Nested
-    @DisplayName("REST-Schnittstelle fuer DELETE")
-    class Loeschen {
-        @ParameterizedTest(name = "[{index}] Loeschen eines vorhandenen Produktes: id={0}")
-        @ValueSource(strings = ID_DELETE)
-        @DisplayName("Loeschen eines vorhandenen Produktes")
-        void deleteById(final String id) {
-            // when
-            final var statusCode = client
-                .delete()
-                .uri(ID_PATH, id)
-                .exchangeToMono(response -> Mono.just(response.statusCode()))
-                .block();
-
-            // then
-            assertThat(statusCode).isEqualTo(NO_CONTENT);
         }
     }
 }

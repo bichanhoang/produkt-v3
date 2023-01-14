@@ -18,6 +18,7 @@ package com.acme.produkt.rest;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @SuppressWarnings({"RecordComponentNumber", "WriteTag"})
 record ProduktDownload(
@@ -25,6 +26,9 @@ record ProduktDownload(
     LocalDate erscheinungsdatum,
     URL homepage,
     UmsatzDTO umsatz,
+    UUID angestellterId,
+    String angestellterNachname,
+    String angestellterEmail,
     @SuppressWarnings("RecordComponentName")
     Links _links
 ) {

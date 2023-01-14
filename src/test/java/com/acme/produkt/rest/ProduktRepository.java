@@ -23,6 +23,8 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @HttpExchange("")
 @SuppressWarnings("WriteTag")
 interface ProduktRepository {
@@ -30,5 +32,5 @@ interface ProduktRepository {
     Mono<ProduktDownload> getProdukt(@PathVariable String id);
 
     @GetExchange("")
-    Mono<ProdukteDownload> getProdukte(@RequestParam MultiValueMap<String, String> suchkriterien);
+    Mono<ProdukteDownload> getProdukte(@RequestParam Map<String, String> suchkriterien);
 }
