@@ -17,7 +17,6 @@
 package com.acme.produkt.rest;
 
 import com.acme.produkt.entity.Produkt;
-import com.acme.produkt.service.NotFoundException;
 import com.acme.produkt.service.ProduktReadService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,11 +45,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.acme.produkt.service.NotFoundException;
 import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
-import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.NOT_MODIFIED;
-import static org.springframework.http.ResponseEntity.*;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
 
 
 /**
@@ -64,6 +66,7 @@ import static org.springframework.http.ResponseEntity.*;
 @RequestMapping(REST_PATH)
 @OpenAPIDefinition(info = @Info(title = "Produkt API", version = "v2"))
 @RequiredArgsConstructor
+@SuppressWarnings("ClassFanOutComplexity")
 @Slf4j
 final class ProduktGetController {
 
@@ -92,7 +95,8 @@ final class ProduktGetController {
     /**
      * Suche anhand der Produkt-ID als Pfad-Parameter.
      *
-     * @param id ID des zu suchenden Produktes
+     * @param id ID des zu suchenden Produktes.
+     * @param version Die Version des zu suchenden Produktes.
      * @param request Das Request-Objekt, um Links für HATEOAS zu erstellen.
      * @return Gefundenes Produkt mit Atom-Links.
      */
@@ -149,16 +153,13 @@ final class ProduktGetController {
         final HttpServletRequest request
     ) {
         log.debug("find: suchkriterien={}", suchkriterien);
-        if (suchkriterien.size() > 1) {
-            return notFound().build();
-        }
 
         final Collection<Produkt> produkte;
         if (suchkriterien.isEmpty()) {
             produkte = service.findAll();
         } else {
             final var angestellterIdStr = suchkriterien.get("angestellterId");
-            if (angestellterIdStr == null) {
+            if (angestellterIdStr == null || suchkriterien.size() > 1) {
                 return notFound().build();
             }
             final var angestellterId = UUID.fromString(angestellterIdStr);

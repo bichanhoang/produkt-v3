@@ -44,7 +44,6 @@ import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import static java.math.BigDecimal.ONE;
 import static java.time.LocalDateTime.now;

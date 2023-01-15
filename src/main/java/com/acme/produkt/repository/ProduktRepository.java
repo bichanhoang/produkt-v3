@@ -77,7 +77,7 @@ public interface ProduktRepository extends JpaRepository<Produkt, UUID>, JpaSpec
     /**
      * Produkte zu gegebener Angestellter-ID aus der DB ermitteln.
      *
-     * @param angestellterId Kunde-ID für die Suche
+     * @param angestellterId Angestellter-ID für die Suche
      * @return Liste der gefundenen Produkte
      */
     @EntityGraph

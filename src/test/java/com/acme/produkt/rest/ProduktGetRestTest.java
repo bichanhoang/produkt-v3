@@ -334,8 +334,31 @@ class ProduktGetRestTest {
             assertThat(statusCode).isEqualTo(FORBIDDEN);
         }
 
-    }
+        @ParameterizedTest(name = "[{index}] Suche mit vorhandener Angestellter-ID: angestellterId={0}")
+        @ValueSource(strings = ANGESTELLTER_ID)
+        @DisplayName("Suche mit vorhandener Angestellter-ID")
+        void findByAngestellterId(final String angestellterId) {
+            // given
+            final var suchkriterien = Map.of(ANGESTELLTER_ID_PARAM, angestellterId);
 
+            // when
+            final var produkte = produktRepo.getProdukte(suchkriterien).block();
+
+            // then
+            assertThat(produkte).isNotNull();
+            final var embedded = produkte._embedded();
+            assertThat(embedded).isNotNull();
+            final var produkteEmbedded = embedded.produkte();
+            assertThat(produkteEmbedded)
+                .isNotNull()
+                .isNotEmpty();
+            produkteEmbedded
+                .stream()
+                .map(produkt -> produkt.angestellterId().toString().toLowerCase())
+                .forEach(kid -> assertThat(kid).isEqualTo(angestellterId));
+        }
+    }
+    
     @Nested
     @DisplayName("REST-Schnittstelle fuer die Suche nach Strings")
     class SucheNachStrings {
@@ -362,29 +385,5 @@ class ProduktGetRestTest {
             Arrays.stream(namen)
                 .forEach(name -> assertThat(name).startsWith(prefix));
         }
-    }
-
-    @ParameterizedTest(name = "[{index}] Suche mit vorhandener Angestellter-ID: angestellterId={0}")
-    @ValueSource(strings = ANGESTELLTER_ID)
-    @DisplayName("Suche mit vorhandener Angestellter-ID")
-    void findByKundeId(final String angestellterId) {
-        // given
-        final var suchkriterien = Map.of(ANGESTELLTER_ID_PARAM, angestellterId);
-
-        // when
-        final var produkte = produktRepo.getProdukte(suchkriterien).block();
-
-        // then
-        assertThat(produkte).isNotNull();
-        final var embedded = produkte._embedded();
-        assertThat(embedded).isNotNull();
-        final var produkteEmbedded = embedded.produkte();
-        assertThat(produkteEmbedded)
-            .isNotNull()
-            .isNotEmpty();
-        produkteEmbedded
-            .stream()
-            .map(produkt -> produkt.angestellterId().toString().toLowerCase())
-            .forEach(kid -> assertThat(kid).isEqualTo(angestellterId));
     }
 }

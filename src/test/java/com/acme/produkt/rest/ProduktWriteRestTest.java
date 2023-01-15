@@ -128,7 +128,7 @@ class ProduktWriteRestTest {
                 args.get(1, LocalDate.class),
                 args.get(2, URL.class),
                 umsatz,
-                UUID.fromString(args.get(4).toString())
+                UUID.fromString(args.getString(4))
             );
 
             // when

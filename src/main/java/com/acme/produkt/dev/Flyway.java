@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */
 interface Flyway {
-     /**
+    /**
      * Bean-Definition, um eine Migrationsstrategie für Flyway im Profile "dev" bereitzustellen, so dass zuerst alle
      * Tabellen, Indexe etc. gelöscht und dann neu aufgebaut werden.
      *

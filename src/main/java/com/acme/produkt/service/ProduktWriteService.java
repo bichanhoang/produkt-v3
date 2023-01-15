@@ -28,7 +28,7 @@ import java.util.UUID;
 
 /**
  * Anwendungslogik für Produkte auch mit Bean Validation.
- * ![Klassendiagramm](../../../images/KundeWriteService.svg)
+ * ![Klassendiagramm](../../../images/ProduktWriteService.svg)
  *
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */
@@ -69,9 +69,12 @@ public class ProduktWriteService {
      * Ein vorhandenes Produkt aktualisieren.
      *
      * @param produkt Das Objekt mit den neuen Daten (ohne ID)
-     * @param id ID des zu aktualisierenden Produktes
+     * @param id ID des zu aktualisierenden Produktes.
+     * @param version Die Versionsnummer des zu aktualisierenden Produktes.
+     * @return Das aktualisierte Produkt.
      * @throws ConstraintViolationsException Falls mindestens ein Constraint verletzt ist.
      * @throws NotFoundException Kein Produkt zur ID vorhanden.
+     *
      */
     @Transactional
     public Produkt update(final Produkt produkt, final UUID id, final int version) {

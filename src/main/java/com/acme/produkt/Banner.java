@@ -47,11 +47,11 @@ final class Banner {
     private static final InetAddress LOCALHOST = getLocalhost();
     private static final long MEGABYTE = 1024L * 1024L;
     private static final Runtime RUNTIME = Runtime.getRuntime();
-    private static final String SERVICE_HOST = System.getenv("KUNDE_SERVICE_HOST");
-    private static final String SERVICE_PORT = System.getenv("KUNDE_SERVICE_PORT");
+    private static final String SERVICE_HOST = System.getenv("PRODUKT_SERVICE_HOST");
+    private static final String SERVICE_PORT = System.getenv("PRODUKT_SERVICE_PORT");
     private static final String KUBERNETES = SERVICE_HOST == null
         ? "N/A"
-        : "KUNDE_SERVICE_HOST=" + SERVICE_HOST + ", KUNDE_SERVICE_PORT=" + SERVICE_PORT;
+        : "PRODUKT_SERVICE_HOST=" + SERVICE_HOST + ", PRODUKT_SERVICE_PORT=" + SERVICE_PORT;
     private static final String USERNAME = System.getProperty("user.name");
 
     /**

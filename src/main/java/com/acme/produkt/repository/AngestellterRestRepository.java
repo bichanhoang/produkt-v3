@@ -22,7 +22,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 import reactor.core.publisher.Mono;
 
 /**
- * "HTTP Interface" für den REST-Client für Kundedaten.
+ * "HTTP Interface" für den REST-Client für Angestellterdaten.
  *
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */

@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * REST- oder GraphQL-Client für Kundedaten.
+ * REST- oder GraphQL-Client für Angestellterdaten.
  *
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */
@@ -44,7 +44,7 @@ public class AngestellterRepository {
      * Angestellter anhand der Angestellter-ID suchen.
      *
      * @param angestellterId Die Id des gesuchten Angestellter.
-     * @return Der gefundene Kunde oder null.
+     * @return Der gefundene Angestellte oder null.
      * @throws AngestellterServiceException falls beim Zugriff auf den Web Service eine Exception eingetreten ist.
      */
     public Optional<Angestellter> findById(final UUID angestellterId) {
@@ -77,7 +77,7 @@ public class AngestellterRepository {
         log.debug("findEmailById: angestellterId={}", angestellterId);
         final var query = """
             query {
-                kunde(id: "%s") {
+                angestellter(id: "%s") {
                     email
                 }
             }

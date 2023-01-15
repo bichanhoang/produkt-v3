@@ -28,7 +28,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,7 +46,12 @@ import java.util.stream.Collectors;
 
 import static com.acme.produkt.rest.ProduktGetController.ID_PATTERN;
 import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.PRECONDITION_FAILED;
+import static org.springframework.http.HttpStatus.PRECONDITION_REQUIRED;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -92,6 +105,11 @@ final class ProduktWriteController {
      *
      * @param id ID des zu aktualisierenden Produktes.
      * @param produktDTO Das Produktobjekt aus dem eingegangenen Request-Body.
+     * @param version Die Versionsnummer des ziu aktualieserenden Produktes
+     * @param request Das Request-Objekt, um `Location` im Response-Header zu erstellen.
+     * @return Response mit Statuscode 204 oder Statuscode 400, falls der JSON-Datensatz syntaktisch nicht korrekt ist
+     *     oder 422 falls Constraints verletzt sindoder 412 falls die Versionsnummer nicht ok ist oder 428 falls
+     *     die Versionsnummer fehlt.
      */
     @PutMapping(path = "{id:" + ID_PATTERN + "}", consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(NO_CONTENT)

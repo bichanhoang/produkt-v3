@@ -57,9 +57,9 @@ final class ExceptionHandler extends DataFetcherExceptionResolverAdapter {
     }
 
     /**
-     * Abbildung der Exceptions aus KundeGraphQlController auf GraphQLError.
+     * Abbildung der Exceptions aus ProduktGraphQlController auf GraphQLError.
      *
-     * @param ex Exception aus KundeGraphQlController
+     * @param ex Exception aus ProduktGraphQlController
      * @param env Environment-Objekt
      */
     @Override

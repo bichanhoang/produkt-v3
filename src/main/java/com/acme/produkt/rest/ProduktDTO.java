@@ -32,6 +32,7 @@ import java.util.UUID;
  * @param erscheinungsdatum Das Erscheinungsdatum eines Produktes.
  * @param homepage Die Homepage eines Produktes.
  * @param umsatz Der Umsatz eines Produktes.
+ * @param angestellterId Die ID des Angestellten, der das Produkt verwaltet.
  */
 @SuppressWarnings("RecordComponentNumber")
 record ProduktDTO(

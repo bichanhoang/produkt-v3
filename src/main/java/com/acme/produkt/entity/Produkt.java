@@ -29,15 +29,19 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 import static jakarta.persistence.CascadeType.PERSIST;
@@ -55,6 +59,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Table(name = "produkt")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Getter
 @Setter
 @ToString
@@ -67,6 +72,8 @@ public class Produkt {
      * Muster für einen gültigen Namen.
      */
     public static final String NAME_PATTERN = "[A-ZÄÖÜ][a-zäöüß]+(-[A-ZÄÖÜ][a-zäöüß]+)?";
+
+    private static final int MAX_LENGTH = 40;
 
     /**
      * Die ID des Produktes.
@@ -93,7 +100,7 @@ public class Produkt {
      */
     @NotNull
     @Pattern(regexp = NAME_PATTERN)
-    @Size(max = 40)
+    @Size(max = MAX_LENGTH)
     private String name;
 
     /**
@@ -102,7 +109,7 @@ public class Produkt {
      * @return Das Erscheinungsdatum.
      */
     @Past
-    @Column(length = 40)
+    @Column(length = MAX_LENGTH)
     private LocalDate erscheinungsdatum;
 
     /**
@@ -147,18 +154,5 @@ public class Produkt {
         name = produkt.name;
         erscheinungsdatum = produkt.erscheinungsdatum;
         homepage = produkt.homepage;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Produkt produkt = (Produkt) o;
-        return id != null && Objects.equals(id, produkt.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }

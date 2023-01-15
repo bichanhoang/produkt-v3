@@ -24,12 +24,12 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-@HttpExchange()
+@HttpExchange
 @SuppressWarnings("WriteTag")
 interface ProduktRepository {
     @GetExchange("/{id}")
     Mono<ProduktDownload> getProdukt(@PathVariable String id);
 
-    @GetExchange()
+    @GetExchange
     Mono<ProdukteDownload> getProdukte(@RequestParam Map<String, String> suchkriterien);
 }

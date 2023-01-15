@@ -17,7 +17,10 @@
 package com.acme.produkt.service;
 
 import com.acme.produkt.entity.Produkt;
-import com.acme.produkt.repository.*;
+import com.acme.produkt.repository.Angestellter;
+import com.acme.produkt.repository.AngestellterRepository;
+import com.acme.produkt.repository.AngestellterServiceException;
+import com.acme.produkt.repository.ProduktRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +52,6 @@ public final class ProduktReadService {
     public Collection<Produkt> findAll() {
         final var produkte = repo.findAll();
         produkte.forEach(produkt -> {
-            // TODO Caching der bisher gefundenen Nachnamen
             final var produktId = produkt.getAngestellterId();
             final var angestellter = fetchAngestellterById(produktId);
             final var email = fetchEmailById(produktId);
@@ -136,7 +138,7 @@ public final class ProduktReadService {
     }
 
     /**
-     * Produkte zur Kunde-ID suchen.
+     * Produkte zur Angestellter-ID suchen.
      *
      * @param angestellterId Die Id des gegebenen Angestellten.
      * @return Die gefundenen Produkte.
@@ -150,8 +152,8 @@ public final class ProduktReadService {
             throw new NotFoundException();
         }
 
-        final var kunde = fetchAngestellterById(angestellterId);
-        final var nachname = kunde == null ? null : kunde.nachname();
+        final var angestellter = fetchAngestellterById(angestellterId);
+        final var nachname = angestellter == null ? null : angestellter.nachname();
         final var email = fetchEmailById(angestellterId);
         log.trace("findByAngestellterId: nachname={}, email={}", nachname, email);
         produkte.forEach(produkt -> {
@@ -169,10 +171,10 @@ public final class ProduktReadService {
             final var angestellter = angestellterRepo
                 .findById(angestellterId)
                 .orElse(new Angestellter("N/A", "n.a@acme.com"));
-            log.debug("findKundeById: {}", angestellter);
+            log.debug("findAngestellterById: {}", angestellter);
             return angestellter;
         } catch (final AngestellterServiceException ex) {
-            log.debug("findKundeById: {}", ex.getRestException().getClass().getSimpleName());
+            log.debug("findAngestellterById: {}", ex.getRestException().getClass().getSimpleName());
             return new Angestellter("Exception", "exception@acme.com");
         }
     }
