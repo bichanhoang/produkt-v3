@@ -206,15 +206,4 @@ final class ProduktWriteController {
         problemDetail.setType(URI.create(PROBLEM_PATH + ProblemType.BAD_REQUEST.getValue()));
         return problemDetail;
     }
-
-    /**
-     * ExceptionHandler für eine NotFoundException.
-     *
-     * @param ex Die Exception
-     */
-    @ExceptionHandler
-    @ResponseStatus(NOT_FOUND)
-    void onNotFound(final NotFoundException ex) {
-        log.debug("onNotFound: {}", ex.getMessage());
-    }
 }

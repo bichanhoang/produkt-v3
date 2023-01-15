@@ -30,13 +30,11 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -45,9 +43,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.acme.produkt.service.NotFoundException;
 import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.NOT_MODIFIED;
 import static org.springframework.http.ResponseEntity.notFound;
@@ -196,16 +192,5 @@ final class ProduktGetController {
         final var namen = service.findNamenByPrefix(prefix);
         log.debug("findNamenByPrefix: {}", namen);
         return namen.toString();
-    }
-
-    /**
-     * Für den Fall, dass die GET-Request keine Ergebnisse liefert, wird eine NotFoundException behandelt.
-     *
-     * @param ex Die NotFoundException, die gefangen wurde.
-     */
-    @ExceptionHandler
-    @ResponseStatus(NOT_FOUND)
-    void onNotFound(final NotFoundException ex) {
-        log.debug("onNotFound: {}", ex.getMessage());
     }
 }

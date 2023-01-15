@@ -22,9 +22,10 @@ package org.springframework {
         interface "@RequestMapping" as RequestMapping
         interface "@PathVariable" as PathVariable
         interface "@RequestParam" as RequestParam
-        interface "@ExceptionHandler" as ExceptionHandler
         interface "@ResponseStatus" as ResponseStatus
         interface "@GetMapping" as GetMapping
+        interface "@ControllerAdvice" as ControllerAdvice
+        interface "@ExceptionHandler" as ExceptionHandler
     }
 
     package http {
@@ -62,27 +63,28 @@ package com.acme.produkt {
     package rest #DDDDDD {
         class ProduktModel <<entity>>
 
+        class CommonExceptionHandler << @ControllerAdvice >> {
+            + @ExceptionHandler @ResponseStatus onNotFound(ex: NotFoundException)
+        }
+
         class ProduktGetController << boundary >> << @RestController >> << @RequestMapping >> {
             + @GetMapping findById(@PathVariable id: UUID, @RequestHeader("If-None-Match") version: String, request: HttpServletRequest): ResponseEntity<ProduktModel>
             + @GetMapping find(@RequestParam suchkriterien: Map<String, String>, request: HttpServletRequest): ResponseEntity<ProduktModel>
             + @GetMapping findbyNamenPrefix(@PathVariable prefix: String): String
-            + @ExceptionHandler onNotFound(ex: NotFoundException): void
         }
 
         ProduktGetController o-right-> "1" ProduktReadService : service
         ProduktGetController ..> ProduktModel
         ProduktGetController ..> Produkt
-        ProduktGetController ..> NotFoundException
 
         ProduktGetController .down.> HttpServletRequest
         ProduktGetController .up.> RequestMapping
         ProduktGetController .up.> RestController
-        ProduktGetController .up.> CollectionModel
+        ProduktGetController .left.> CollectionModel
+        ProduktGetController ..> CommonExceptionHandler
         ProduktGetController .up.> ResponseEntity
         ProduktGetController .up.> PathVariable
         ProduktGetController .up.> RequestParam
-        ProduktGetController .up.> ResponseStatus
-        ProduktGetController .up.> ExceptionHandler
         ProduktGetController .up.> GetMapping
 
         ProduktGetController .down.> UUID
@@ -91,6 +93,12 @@ package com.acme.produkt {
         ProduktModel .[hidden].> ProduktReadService
         ProduktModel ..> Produkt
         ProduktModel .[hidden].> Produkt
+
+        CommonExceptionHandler .down.> NotFoundException
+        CommonExceptionHandler .up.> ControllerAdvice
+        CommonExceptionHandler .up.> ExceptionHandler
+        CommonExceptionHandler .up.> ResponseStatus
+        CommonExceptionHandler .[hidden].> Produkt
     }
 }
 

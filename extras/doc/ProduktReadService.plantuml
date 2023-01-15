@@ -26,6 +26,7 @@ package java.util {
 package org.springframework {
     package stereotype {
         interface Service
+        interface Repository
     }
 
     package transaction.annotation {
@@ -43,7 +44,7 @@ package com.acme.produkt {
     }
 
     package repository {
-        interface ProduktRepository << control >>
+        interface ProduktRepository << control >> << @Repository >>
     }
 
     package service #DDDDDD {
@@ -62,7 +63,8 @@ package com.acme.produkt {
         ProduktReadService .up.> Collection
         ProduktReadService .up.> Service
         ProduktReadService .up.> Map
-        ProduktReadService ..> Transactional
+        ProduktReadService .up.> Transactional
+        ProduktReadService .up.> Repository
     }
 }
 

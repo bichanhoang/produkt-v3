@@ -44,4 +44,4 @@ CREATE DATABASE produkt;
 GRANT ALL ON DATABASE produkt TO produkt;
 
 -- https://www.postgresql.org/docs/10/sql-createtablespace.html
-CREATE TABLESPACE kundespace OWNER produkt LOCATION '/var/lib/postgresql/tablespace/produkt';
+CREATE TABLESPACE produktspace OWNER produkt LOCATION '/var/lib/postgresql/tablespace/produkt';
