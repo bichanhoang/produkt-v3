@@ -16,18 +16,28 @@
  */
 package com.acme.produkt.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import static jakarta.persistence.CascadeType.PERSIST;
@@ -45,7 +55,6 @@ import static jakarta.persistence.FetchType.LAZY;
 @Table(name = "produkt")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Getter
 @Setter
 @ToString
@@ -115,7 +124,6 @@ public class Produkt {
 
     // der Spaltenwert referenziert einen Wert aus einer anderen DB
     @Column(name = "angestellter_id")
-    // @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
     private UUID angestellterId;
 
     @CreationTimestamp
@@ -139,5 +147,18 @@ public class Produkt {
         name = produkt.name;
         erscheinungsdatum = produkt.erscheinungsdatum;
         homepage = produkt.homepage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Produkt produkt = (Produkt) o;
+        return id != null && Objects.equals(id, produkt.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

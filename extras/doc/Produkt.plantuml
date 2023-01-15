@@ -30,31 +30,51 @@ package java {
 
     package time {
         class LocalDate
+        class LocalDateTime
     }
 
     BigDecimal .up[hidden].> UUID
     UUID .[hidden].> LocalDate
 }
 
+package jakarta.persistence {
+    interface "@Entity" as Entity
+    interface "@Table" as Table
+
+    Entity -[hidden]down-> Table
+    LocalDateTime .up[hidden].> Table
+}
+
 package com.acme.produkt.entity #DDDDDD {
-    class Umsatz {
-        readonly betrag: BigDecimal
-        readonly waehrung: Currency
+    class Umsatz <<entity>> {
+        @Id @GeneratedValue @JsonIgnore id : UUID
+        betrag: BigDecimal
+        waehrung: Currency
     }
 
-    class Produkt << entity >> {
-        readonly id : UUID
-        readonly name : String
-        readonly erscheinungsdatum: LocalDate
-        readonly homepage: URL
-        readonly Umsatz: Umsatz
+    class Produkt << entity >> << @Entity >> << @Table >> {
+        @Id @GeneratedValue id : UUID
+        @Version version : int
+        name : String
+        erscheinungsdatum: LocalDate
+        homepage: URL
+        umsatz: Umsatz
+        angestellterId: UUID
+        @CreationTimestamp erzeugt: LocalDateTime
+        @UpdateTimestamp aktualisiert: LocalDateTime
+        @Transient angestellterNachname: String
+        @Transient angestellterEmail: String
+
     }
 
-    Produkt *--> "0..1" Umsatz: umsatz
+    Produkt *-right-> "0..1" Umsatz: @OneToOne(cascade = [...]) @JoinColumn(...) umsatz
 
     Produkt ..> UUID
     Produkt ..> LocalDate
+    Produkt ..> LocalDateTime
     Produkt ..> URL
+    Produkt .left.> Entity
+    Produkt .left.> Table
 
     Umsatz ..> Currency
     Umsatz ..> BigDecimal

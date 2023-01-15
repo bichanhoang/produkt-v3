@@ -40,7 +40,6 @@ import java.util.UUID;
 public final class ProduktReadService {
     private final ProduktRepository repo;
     private final AngestellterRepository angestellterRepo;
-    private final SpecBuilder specBuilder;
 
     /**
      * Alle Bestellungen ermitteln.
@@ -111,10 +110,7 @@ public final class ProduktReadService {
             }
         }
 
-        final var spec = specBuilder
-            .build(suchkriterien)
-            .orElseThrow(() -> new NotFoundException(suchkriterien));
-        final var produkte = repo.findAll(spec);
+        final var produkte = repo.findAll();
         if (produkte.isEmpty()) {
             throw new NotFoundException(suchkriterien);
         }

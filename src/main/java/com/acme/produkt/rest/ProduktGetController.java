@@ -102,7 +102,8 @@ final class ProduktGetController {
     @ApiResponse(responseCode = "404", description = "Produkt nicht gefunden")
     ResponseEntity<ProduktModel> findById(
         @PathVariable final UUID id,
-        @RequestHeader("If-None-Match") final Optional<String> version, final HttpServletRequest request) {
+        @RequestHeader("If-None-Match") final Optional<String> version,
+        final HttpServletRequest request) {
 
         // Anwendungskern
         final var produkt = service.findById(id);

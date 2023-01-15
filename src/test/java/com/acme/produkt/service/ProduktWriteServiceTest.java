@@ -16,7 +16,6 @@
  */
 package com.acme.produkt.service;
 
-import com.acme.produkt.MailProps;
 import com.acme.produkt.entity.Produkt;
 import com.acme.produkt.entity.Umsatz;
 import com.acme.produkt.repository.ProduktRepository;
@@ -83,14 +82,6 @@ class ProduktWriteServiceTest {
     @Mock
     @SuppressWarnings({"unused", "UnusedVariable"})
     private DelegatingPasswordEncoder passwordEncoder;
-
-    @Mock
-    @SuppressWarnings({"unused", "UnusedVariable"})
-    private JavaMailSender mailSender;
-
-    @Mock
-    @SuppressWarnings({"unused", "UnusedVariable"})
-    private MailProps mailProps;
 
     private ProduktWriteService service;
 

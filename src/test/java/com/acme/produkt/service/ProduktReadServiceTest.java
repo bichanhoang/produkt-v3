@@ -19,7 +19,6 @@ import com.acme.produkt.entity.Produkt;
 import com.acme.produkt.entity.Umsatz;
 import com.acme.produkt.repository.AngestellterRepository;
 import com.acme.produkt.repository.ProduktRepository;
-import com.acme.produkt.repository.SpecBuilder;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -78,8 +77,6 @@ class ProduktReadServiceTest {
 
     private AngestellterRepository angestellterRepo;
 
-    private final SpecBuilder specBuilder = new SpecBuilder();
-
     private ProduktReadService service;
 
     @InjectSoftAssertions
@@ -87,7 +84,7 @@ class ProduktReadServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        service = new ProduktReadService(repo, angestellterRepo, specBuilder);
+        service = new ProduktReadService(repo, angestellterRepo);
     }
 
     @Test

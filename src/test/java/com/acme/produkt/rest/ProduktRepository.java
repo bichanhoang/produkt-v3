@@ -16,7 +16,6 @@
  */
 package com.acme.produkt.rest;
 
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
@@ -25,12 +24,12 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-@HttpExchange("")
+@HttpExchange()
 @SuppressWarnings("WriteTag")
 interface ProduktRepository {
     @GetExchange("/{id}")
     Mono<ProduktDownload> getProdukt(@PathVariable String id);
 
-    @GetExchange("")
+    @GetExchange()
     Mono<ProdukteDownload> getProdukte(@RequestParam Map<String, String> suchkriterien);
 }

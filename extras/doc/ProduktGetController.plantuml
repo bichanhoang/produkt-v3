@@ -27,9 +27,14 @@ package org.springframework {
         interface "@GetMapping" as GetMapping
     }
 
+    package http {
+        class ResponseEntity<T>
+    }
     package hateoas {
         class CollectionModel<E>
     }
+
+    ResponseEntity .up[hidden].> CollectionModel
 }
 
 package jakarta.servlet.http {
@@ -39,32 +44,41 @@ package jakarta.servlet.http {
 package java.util {
     interface Map<K,V>
     class UUID
+    UUID .up[hidden].> HttpServletRequest
 }
 
 package com.acme.produkt {
+    package entity {
+        class Produkt << entity >>
+    }
+
     package service {
         class ProduktReadService << control >> << @Service >>
         class NotFoundException
+
+        ProduktReadService .right[hidden].> NotFoundException
     }
 
     package rest #DDDDDD {
         class ProduktModel <<entity>>
 
         class ProduktGetController << boundary >> << @RestController >> << @RequestMapping >> {
-            + @GetMapping findById(@PathVariable id: UUID, request: HttpServletRequest): ProduktModel
-            + @GetMapping find(@RequestParam queryParams: Map<String, String>, request: HttpServletRequest): CollectionModel<ProduktModel>
+            + @GetMapping findById(@PathVariable id: UUID, @RequestHeader("If-None-Match") version: String, request: HttpServletRequest): ResponseEntity<ProduktModel>
+            + @GetMapping find(@RequestParam suchkriterien: Map<String, String>, request: HttpServletRequest): ResponseEntity<ProduktModel>
             + @GetMapping findbyNamenPrefix(@PathVariable prefix: String): String
             + @ExceptionHandler onNotFound(ex: NotFoundException): void
         }
 
-        ProduktGetController o--> "1" ProduktReadService : service
+        ProduktGetController o-right-> "1" ProduktReadService : service
         ProduktGetController ..> ProduktModel
+        ProduktGetController ..> Produkt
+        ProduktGetController ..> NotFoundException
 
-        ProduktGetController .left.> HttpServletRequest
-
+        ProduktGetController .down.> HttpServletRequest
         ProduktGetController .up.> RequestMapping
         ProduktGetController .up.> RestController
         ProduktGetController .up.> CollectionModel
+        ProduktGetController .up.> ResponseEntity
         ProduktGetController .up.> PathVariable
         ProduktGetController .up.> RequestParam
         ProduktGetController .up.> ResponseStatus
@@ -75,6 +89,8 @@ package com.acme.produkt {
         ProduktGetController .down.> Map
 
         ProduktModel .[hidden].> ProduktReadService
+        ProduktModel ..> Produkt
+        ProduktModel .[hidden].> Produkt
     }
 }
 

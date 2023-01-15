@@ -19,30 +19,50 @@ skinparam classAttributeIconSize 0
 package java.util {
     interface Collection<T>
     interface Map<K,V>
+    interface List<T>
     class UUID
+}
+
+package org.springframework {
+    package stereotype {
+        interface Service
+    }
+
+    package transaction.annotation {
+            interface Transactional
+        }
 }
 
 package com.acme.produkt {
     package entity {
         class Produkt << entity >>
+
+        Produkt .up[hidden].> UUID
+        Produkt .up[hidden].> Service
+        Produkt .up[hidden].> Transactional
     }
 
     package repository {
-        class ProduktRepository << control >> << @Repository >>
+        interface ProduktRepository << control >>
     }
 
     package service #DDDDDD {
         class ProduktReadService << control >> << @Service >> {
+            + findAll() : Collection<Produkt>
             + findById(id: UUID): Produkt
             + find(suchkriterien: Map<String, String>): Collection<Produkt>
             + findNamenByPrefix(prefix: String): Collection<String>
+            + findByAngestellterId(UUID angestellterId): Collection<Produkt>
         }
 
         ProduktReadService o--> ProduktRepository : repo
         ProduktReadService .up.> Produkt
         ProduktReadService .up.> UUID
-        ProduktReadService .up> Collection
+        ProduktReadService .up.> List
+        ProduktReadService .up.> Collection
+        ProduktReadService .up.> Service
         ProduktReadService .up.> Map
+        ProduktReadService ..> Transactional
     }
 }
 

@@ -43,7 +43,7 @@ final class ExceptionHandler extends DataFetcherExceptionResolverAdapter {
     @Override
     @SuppressWarnings("ReturnCount")
     protected GraphQLError resolveToSingleError(
-        final Throwable ex,
+        @SuppressWarnings("NullableProblems") final Throwable ex,
         @SuppressWarnings("NullableProblems") final DataFetchingEnvironment env
     ) {
         // "Pattern Matching for instanceof" ab Java 14
@@ -64,7 +64,7 @@ final class ExceptionHandler extends DataFetcherExceptionResolverAdapter {
      */
     @Override
     protected List<GraphQLError> resolveToMultipleErrors(
-        final Throwable ex,
+        @SuppressWarnings("NullableProblems") final Throwable ex,
         @SuppressWarnings("NullableProblems") final DataFetchingEnvironment env
     ) {
         if (ex instanceof final ConstraintViolationsException cve) {
