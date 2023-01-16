@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Profile;
  */
 @Profile(DevConfig.DEV)
 @SuppressWarnings({"ClassNamePrefixedWithPackageName", "HideUtilityClassConstructor"})
-public class DevConfig implements Flyway, LogRequestHeaders, LogPasswordEncoding, LogSignatureAlgorithms, K8s {
+public class DevConfig implements Flyway, LogRequestHeaders, K8s {
     /**
      * Konstante für das Spring-Profile "dev".
      */

@@ -1,26 +1,26 @@
 ### Ein neues Produkt anlegen: 201
-POST {{baseUrl}}
+POST {{baseUrl}}/rest
 Content-Type: application/json
 
 < data/produkt-neu.json
 
 
 ### Ein neues Produkt mit ungueltigen Daten anlegen: 422 (Unprocessable Entity)
-POST {{baseUrl}}
+POST {{baseUrl}}/rest
 Content-Type: application/json
 
 < data/produkt-neu-invalid.json
 
 
 ### Ein neues Produkt mit fehlerhaften Datentypen anlegen: 400 (Bad Request)
-POST {{baseUrl}}
+POST {{baseUrl}}/rest
 Content-Type: application/json
 
 < data/produkt-neu-invalid-types.json
 
 
 ### Syntaktisch falscher JSON-Datensatz: 400 (Bad Request) mit DecodingException
-POST {{baseUrl}}
+POST {{baseUrl}}/rest
 Content-Type: application/json
 
 < data/invalid-json.txt

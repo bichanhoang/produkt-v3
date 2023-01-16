@@ -10,7 +10,7 @@ mutation {
       umsatz: {
         betrag: "200"
         waehrung: "EUR"
-      }
+        }
     }
   ) {
     id

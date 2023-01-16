@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- docker compose exec postgres bash
--- psql --dbname=produkt --username=produkt
+-- psql --dbname=produkt --username=produkt [--file=/sql/V1.0__Create.sql]
 
 CREATE TABLE IF NOT EXISTS umsatz (
                                     id        uuid PRIMARY KEY USING INDEX TABLESPACE produktspace,
@@ -26,10 +26,10 @@ CREATE TABLE IF NOT EXISTS umsatz (
   ) TABLESPACE produktspace;
 
 CREATE TABLE IF NOT EXISTS produkt (
-                                     id            uuid PRIMARY KEY USING INDEX TABLESPACE produktspace,
+  id            uuid PRIMARY KEY USING INDEX TABLESPACE produktspace,
   -- https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT
-                                     version       integer NOT NULL DEFAULT 0,
-                                     name      varchar(40) NOT NULL,
+  version       integer NOT NULL DEFAULT 0,
+  name      varchar(40) NOT NULL,
   -- https://www.postgresql.org/docs/current/datatype-datetime.html
   erscheinungsdatum  date CHECK (erscheinungsdatum < current_date),
   homepage      varchar(40),

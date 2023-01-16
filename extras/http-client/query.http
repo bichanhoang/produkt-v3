@@ -1,4 +1,4 @@
-### Suche mit vorhandener Produkt-ID als admin
+### Suche mit vorhandener Produkt-ID
 GRAPHQL {{baseUrl}}/graphql
 
 query {
@@ -7,7 +7,7 @@ query {
   }
 }
 
-### Suche mit nicht-vorhandener Produkt-ID als admin
+### Suche mit nicht-vorhandener Produkt-ID
 GRAPHQL {{baseUrl}}/graphql
 
 query {
@@ -16,7 +16,7 @@ query {
   }
 }
 
-### Suche mit vorhandener Produkt-ID als admin
+### Suche mit vorhandener Produkt-ID
 GRAPHQL {{baseUrl}}/graphql
 
 query {
@@ -47,7 +47,7 @@ query {
   }
 }
 
-### Suche Produkte mit dem Namen als admin
+### Suche Produkte mit dem Namen
 GRAPHQL {{baseUrl}}/graphql
 
 query {
@@ -62,7 +62,7 @@ query {
     }
   }
 }
-### Suche Produkte mit nicht-vorhandenem Namen als admin
+### Suche Produkte mit nicht-vorhandenem Namen
 GRAPHQL {{baseUrl}}/graphql
 
 query {

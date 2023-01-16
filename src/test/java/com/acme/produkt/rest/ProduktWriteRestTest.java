@@ -231,7 +231,7 @@ class ProduktWriteRestTest {
                     produktOrig.erscheinungsdatum(),
                     produktOrig.homepage(),
                     null,
-                    null
+                    UUID.fromString(ANGESTELLTER_ID)
                 );
 
                 // when
@@ -328,7 +328,7 @@ class ProduktWriteRestTest {
                     produktOrig.erscheinungsdatum(),
                     produktOrig.homepage(),
                     null,
-                    null
+                    UUID.fromString(ANGESTELLTER_ID)
                 );
 
                 // when

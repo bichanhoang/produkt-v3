@@ -1,22 +1,22 @@
 ### Ein Produkt mittels PUT aktualisieren: 204
-PUT {{baseUrl}}/00000000-0000-0000-0000-000000000030
+PUT {{baseUrl}}/rest/00000000-0000-0000-0000-000000000030
+If-Match: "0"
 Content-Type: application/json
-Authorization: Basic {{userAdmin}} {{password}}
 
 < data/produkt-30-put.json
 
 
 ### Ein nicht-vorhandenen Produkt mittels PUT aktualisieren: 404 (Not Found)
-PUT {{baseUrl}}/ffffffff-ffff-ffff-ffff-ffffffffffff
+PUT {{baseUrl}}/rest/ffffffff-ffff-ffff-ffff-ffffffffffff
+If-Match: ""0"
 Content-Type: application/json
-Authorization: Basic {{userAdmin}} {{password}}
 
 < data/produkt-30-put.json
 
 
 ### Ein Produkt mittels PUT und ungueltigen Daten aktualisieren: 422 (Unprocessable Entity)
-PUT {{baseUrl}}/00000000-0000-0000-0000-000000000030
+PUT {{baseUrl}}/rest/00000000-0000-0000-0000-000000000030
+If-Match: "0"
 Content-Type: application/json
-Authorization: Basic {{userAdmin}} {{password}}
 
 < data/produkt-30-put-invalid.json

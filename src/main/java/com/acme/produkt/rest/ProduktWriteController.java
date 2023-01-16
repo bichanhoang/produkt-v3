@@ -17,7 +17,6 @@
 package com.acme.produkt.rest;
 
 import com.acme.produkt.service.ConstraintViolationsException;
-import com.acme.produkt.service.NotFoundException;
 import com.acme.produkt.service.ProduktWriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,7 +46,6 @@ import java.util.stream.Collectors;
 import static com.acme.produkt.rest.ProduktGetController.ID_PATTERN;
 import static com.acme.produkt.rest.ProduktGetController.REST_PATH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.PRECONDITION_FAILED;
 import static org.springframework.http.HttpStatus.PRECONDITION_REQUIRED;

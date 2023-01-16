@@ -21,5 +21,5 @@ package com.acme.produkt;
  *
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */
-final class ApplicationConfig implements ThreadConfig {
+final class ApplicationConfig implements ThreadConfig, ClientConfig {
 }

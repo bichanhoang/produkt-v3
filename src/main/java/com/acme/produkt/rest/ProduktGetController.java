@@ -153,7 +153,8 @@ final class ProduktGetController {
         final Collection<Produkt> produkte;
         if (suchkriterien.isEmpty()) {
             produkte = service.findAll();
-        } else {
+        }
+        else {
             final var angestellterIdStr = suchkriterien.get("angestellterId");
             if (angestellterIdStr == null || suchkriterien.size() > 1) {
                 return notFound().build();
@@ -161,6 +162,7 @@ final class ProduktGetController {
             final var angestellterId = UUID.fromString(angestellterIdStr);
             produkte = service.findByAngestellterId(angestellterId);
         }
+
 
         final var baseUri = uriHelper.getBaseUri(request).toString();
         final var models = produkte

@@ -1,0 +1,27 @@
+### GET mit vorhandener Angestellter-ID
+GET {{restUrl}}?angestellterId=00000000-0000-0000-0000-000000000001
+Accept: application/hal+json
+Authorization: Basic {{userAdmin}} {{password}}
+
+> {%
+    client.test('GET mit vorhandener Angestellter-ID: OK', () => {
+        const status = response.status;
+        client.assert(status === 200, `Falscher Statuscode: ${status}`);
+    });
+
+    client.test('GET mit vorhandener Angestellter-ID: application/hal+json', () => {
+        const mimeType = response.contentType.mimeType;
+        client.assert(mimeType === 'application/hal+json', `Falscher MIME-Typ: ${mimeType}`);
+    });
+
+    client.test('GET mit vorhandener Angestellter-ID: body mit Daten', () => {
+        const body = response.body;
+        client.assert(typeof body === 'object', `body: ${JSON.stringify(body)}`);
+        const produkte = body._embedded.produkte;
+        client.assert(Array.isArray(produkte), `body: ${JSON.stringify(body)}`);
+        client.assert(produkte.length > 0, `produkte: ${JSON.stringify(produkte)}`);
+        produkte
+            .map(produkt => produkt.angestellterNachname)
+            .forEach(angestellterNachname => client.assert(angestellterNachname !== undefined && angestellterNachname !== null, `angestellterNachname: ${angestellterNachname}`))
+    });
+%}

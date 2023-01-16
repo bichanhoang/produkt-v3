@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --  docker compose exec postgres bash
---  psql --dbname=produkt --username=produkt --file=/scripts/insert.sql
+--  psql --dbname=produkt --username=produkt [--file=/sql/V1.1__Insert.sql]
 
 INSERT INTO umsatz (id, betrag, waehrung)
 VALUES

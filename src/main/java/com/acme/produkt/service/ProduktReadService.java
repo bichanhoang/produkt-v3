@@ -25,11 +25,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 
 /**
  * Anwendungslogik für Produkt.
@@ -38,9 +40,10 @@ import java.util.UUID;
  * @author <a href="mailto:Juergen.Zimmermann@h-ka.de">Jürgen Zimmermann</a>
  */
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public final class ProduktReadService {
+public class ProduktReadService {
     private final ProduktRepository repo;
     private final AngestellterRepository angestellterRepo;
 
@@ -61,6 +64,7 @@ public final class ProduktReadService {
         return produkte;
     }
 
+
     /**
      * Ein Produkt anhand seiner ID suchen.
      *
@@ -68,7 +72,6 @@ public final class ProduktReadService {
      * @return Das gefundene Produkt
      * @throws NotFoundException Falls kein Produkt gefunden wurde
      * */
-
     public @NonNull Produkt findById(final UUID id) {
         log.debug("findById: id={}", id);
         final var produktOpt = repo.findById(id);

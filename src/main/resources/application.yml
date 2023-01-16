@@ -45,12 +45,12 @@ spring:
     username: produkt
     password: Change Me!
   flyway:
-    locations: classpath:db/migration/{vendor}
+    locations: classpath:db/migration/postgresql
     create-schemas: false
     # Tablespace fuer flyway_schema_history
     # MySQL: Flyway generiert bei "CREATE TABLE flyway_schema_history ..." nicht "ROW_FORMAT=COMPACT"
     # Oracle: CREATE TABLESPACE ist sehr kompliziert https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-TABLESPACE.html
-    #tablespace: kundespace
+    #tablespace: produktspace
   jpa:
     #database-platform: POSTGRESQL
     hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy

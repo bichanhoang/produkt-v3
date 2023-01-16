@@ -23,8 +23,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import static com.acme.produkt.Banner.TEXT;
 import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL;
 import static org.springframework.hateoas.support.WebStack.WEBMVC;
@@ -39,8 +37,6 @@ import static org.springframework.hateoas.support.WebStack.WEBMVC;
 @EnableConfigurationProperties(MailProps.class)
 @EnableHypermediaSupport(type = HAL, stacks = WEBMVC)
 @EnableJpaRepositories
-@EnableWebSecurity
-@EnableMethodSecurity
 @SuppressWarnings({"ImplicitSubclassInspection", "ClassUnconnectedToPackage"})
 public final class Application {
     private Application() {
