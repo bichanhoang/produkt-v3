@@ -62,7 +62,6 @@ import static org.springframework.http.ResponseEntity.status;
 @RequestMapping(REST_PATH)
 @OpenAPIDefinition(info = @Info(title = "Produkt API", version = "v2"))
 @RequiredArgsConstructor
-@SuppressWarnings("ClassFanOutComplexity")
 @Slf4j
 final class ProduktGetController {
 
@@ -144,18 +143,23 @@ final class ProduktGetController {
     @Operation(summary = "Suche mit Suchkriterien", tags = "Suchen")
     @ApiResponse(responseCode = "200", description = "CollectionModel mit dem Produkten")
     @ApiResponse(responseCode = "404", description = "Keine Produkte gefunden")
+    @SuppressWarnings("ReturnCount")
     ResponseEntity<CollectionModel<? extends ProduktModel>> find(
         @RequestParam @NonNull final Map<String, String> suchkriterien,
         final HttpServletRequest request
     ) {
         log.debug("find: suchkriterien={}", suchkriterien);
+        if (suchkriterien.size() > 1) {
+            return notFound().build();
+        }
+
 
         final Collection<Produkt> produkte;
         if (suchkriterien.isEmpty()) {
             produkte = service.findAll();
         } else {
             final var angestellterIdStr = suchkriterien.get("angestellterId");
-            if (angestellterIdStr == null || suchkriterien.size() > 1) {
+            if (angestellterIdStr == null) {
                 return notFound().build();
             }
             final var angestellterId = UUID.fromString(angestellterIdStr);

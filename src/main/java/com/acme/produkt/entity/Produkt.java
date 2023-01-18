@@ -85,8 +85,6 @@ public class Produkt {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    // https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html...
-    // ...#locking-optimistic-mapping
     /**
      * Versionsnummer für optimistische Synchronisation.
      */
