@@ -11,6 +11,9 @@ mutation {
         betrag: "200"
         waehrung: "EUR"
         }
+      angestellterId: "00000000-0000-0000-0000-000000000001"
+      angestellterNachname: "GraphQL"
+      angestellterEmail: "graphql@mutation.de"
     }
   ) {
     id
@@ -30,6 +33,9 @@ mutation {
         betrag: "1"
         waehrung: "EUR"
       }
+      angestellterId: "00000000-0000-0000-0000-000000000001"
+      angestellterNachname: "123"
+      angestellterEmail: "falscheEmail"
     }
   ) {
     id

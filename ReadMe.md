@@ -496,7 +496,7 @@ notwendig.
 ### WICHTIG: Schreibrechte für die Logdatei
 
 Wenn die Anwendung in Kubernetes läuft, ist die Log-Datei `application.log` im
-Verzeichnis `C:\Zimmermann\volumes\produkt-v2`. Das bedeutet auch zwangsläufig,
+Verzeichnis `C:\Zimmermann\volumes\produkt-v3`. Das bedeutet auch zwangsläufig,
 dass diese Datei durch den _Linux-User_ vom (Kubernetes-) Pod angelegt und
 geschrieben wird, wozu die erforderlichen Berechtigungen in Windows gegeben
 sein müssen.

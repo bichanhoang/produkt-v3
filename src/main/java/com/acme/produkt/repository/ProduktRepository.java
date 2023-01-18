@@ -35,9 +35,12 @@ import java.util.UUID;
  */
 @Repository
 public interface ProduktRepository extends JpaRepository<Produkt, UUID>, JpaSpecificationExecutor<Produkt> {
+    @EntityGraph(attributePaths = {"adresse", "interessen"})
+
     @Override
     List<Produkt> findAll();
 
+    @EntityGraph(attributePaths = {"adresse", "interessen"})
     @Override
     Optional<Produkt> findById(UUID id);
 

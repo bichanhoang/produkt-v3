@@ -21,41 +21,42 @@
 # https://gateway-api.sigs.k8s.io/faq
 # https://kubernetes.io/blog/2021/04/22/evolving-kubernetes-networking-with-the-gateway-api
 
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ .Values.namespace }}-ingress
-  namespace: {{ .Values.namespace }}
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  ingressClassName: nginx
-  rules:
-    # kubernetes.docker.internal entspricht localhost. Siehe C:\Windows\System32\drivers\etc\hosts bzw. /etc/hosts
-    - host: kubernetes.docker.internal
-      http:
-        paths:
-          # (.*) wird abgebildet auf $2 (d.h. 2. Pfad-Segment), z.B.
-          #   kubernetes.docker.internal/produkte wird zu kubernetes.docker.internal:8080/
-          #   kubernetes.docker.internal/produkte/123 wird zu kubernetes.docker.internal:8080/123
-          #   kubernetes.docker.internal/produkte/graphql wird zu kubernetes.docker.internal:8080/graphql
-          - path: /produkte(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ include "produkt.fullname" . }}
-                port:
-                  name: http-svc
-                  #number: 8080
-          - path: /bestellungen(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: bestellung
-                port:
-                  name: http-svc
-  # https://kubernetes.github.io/ingress-nginx/user-guide/tls
-  # https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#ssl-ciphers
-  tls:
-    - hosts: [kubernetes.docker.internal]
-      secretName: {{ .Values.namespace }}-tls
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: {{ .Values.namespace }}-ingress
+#  namespace: {{ .Values.namespace }}
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /$2
+#spec:
+#  ingressClassName: nginx
+#  rules:
+#    # kubernetes.docker.internal entspricht localhost. Siehe C:\Windows\System32\drivers\etc\hosts bzw. /etc/hosts
+#    - host: kubernetes.docker.internal
+#      http:
+#        paths:
+#          # (.*) wird abgebildet auf $2 (d.h. 2. Pfad-Segment), z.B.
+#          #   kubernetes.docker.internal/produkte wird zu kubernetes.docker.internal:8080/
+#          #   kubernetes.docker.internal/produkte/123 wird zu kubernetes.docker.internal:8080/123
+#          #   kubernetes.docker.internal/produkte/graphql wird zu kubernetes.docker.internal:8080/graphql
+#          - path: /produkte(/|$)(.*)
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: {{ include "produkt.fullname" . }}
+#                port:
+#                  name: http-svc
+#                  #number: 8080
+#          - path: /bestellungen(/|$)(.*)
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: bestellung
+#                port:
+#                  name: http-svc
+#  # https://kubernetes.github.io/ingress-nginx/user-guide/tls
+#  # https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#ssl-ciphers
+#  tls:
+#    - hosts: [kubernetes.docker.internal]
+#      secretName: {{ .Values.namespace }}-tls
+#

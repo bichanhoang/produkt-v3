@@ -91,7 +91,7 @@ final class ProduktGetController {
     /**
      * Suche anhand der Produkt-ID als Pfad-Parameter.
      *
-     * @param id ID des zu suchenden Produktes.
+     * @param id      ID des zu suchenden Produktes.
      * @param version Die Version des zu suchenden Produktes.
      * @param request Das Request-Objekt, um Links für HATEOAS zu erstellen.
      * @return Gefundenes Produkt mit Atom-Links.
@@ -137,7 +137,7 @@ final class ProduktGetController {
      * Suche mit diversen Suchkriterien als Query-Parameter.
      *
      * @param suchkriterien Query-Parameter als Map.
-     * @param request Das Request-Objekt, um Links für HATEOAS zu erstellen.
+     * @param request       Das Request-Objekt, um Links für HATEOAS zu erstellen.
      * @return Gefundene Produkte als CollectionModel.
      */
     @GetMapping(produces = HAL_JSON_VALUE)
@@ -153,8 +153,7 @@ final class ProduktGetController {
         final Collection<Produkt> produkte;
         if (suchkriterien.isEmpty()) {
             produkte = service.findAll();
-        }
-        else {
+        } else {
             final var angestellterIdStr = suchkriterien.get("angestellterId");
             if (angestellterIdStr == null || suchkriterien.size() > 1) {
                 return notFound().build();
@@ -162,7 +161,6 @@ final class ProduktGetController {
             final var angestellterId = UUID.fromString(angestellterIdStr);
             produkte = service.findByAngestellterId(angestellterId);
         }
-
 
         final var baseUri = uriHelper.getBaseUri(request).toString();
         final var models = produkte

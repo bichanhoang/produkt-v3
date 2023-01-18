@@ -1,3 +1,7 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
+-- noinspection SqlDialectInspectionForFile
+
 -- Copyright (C) 2022 - present Juergen Zimmermann, Hochschule Karlsruhe
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -17,11 +21,11 @@
 -- psql --dbname=produkt --username=produkt [--file=/sql/V1.0__Create.sql]
 
 CREATE TABLE IF NOT EXISTS umsatz (
-                                    id        uuid PRIMARY KEY USING INDEX TABLESPACE produktspace,
+  id        uuid PRIMARY KEY USING INDEX TABLESPACE produktspace,
   -- https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
   -- https://www.postgresql.org/docs/current/datatype-money.html
   -- 10 Stellen, davon 2 Nachkommastellen
-                                    betrag    decimal(10,2) NOT NULL,
+  betrag    decimal(10,2) NOT NULL,
   waehrung  char(3) NOT NULL CHECK (waehrung ~ '[A-Z]{3}')
   ) TABLESPACE produktspace;
 

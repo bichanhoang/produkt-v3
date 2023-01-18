@@ -156,7 +156,7 @@ plugins {
 
 defaultTasks = mutableListOf("compileTestJava")
 group = "com.acme"
-version = "1.0.0"
+version = "2.0.0"
 
 sweeney {
     enforce(mapOf("type" to "gradle", "expect" to "[8.0,8.0]"))

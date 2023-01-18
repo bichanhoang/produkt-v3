@@ -54,7 +54,7 @@ logLevel:
 mailhost: mailserver
 
 # -- Version als Suffix in deployment.yaml für Volumes
-versionSuffix: -v2
+versionSuffix: -v3
 
 # -- Anzahl Replica im Pod von Kubernetes
 replicaCount: 2

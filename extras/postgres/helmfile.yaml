@@ -14,7 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Aufruf:   helmfile apply
-#               zzgl. Port-Forwarding fuer pgadmin durch port-forward.ps1
+#           zzgl. Port-Forwarding fuer pgadmin durch port-forward.ps1
 #           helmfile destroy
 
 releases:

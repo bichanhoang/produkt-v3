@@ -21,6 +21,7 @@ import com.acme.produkt.entity.Umsatz;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Eine Value-Klasse für Eingabedaten passend zu ProduktInput aus dem GraphQL-Schema.
@@ -30,13 +31,20 @@ import java.time.LocalDate;
  * @param erscheinungsdatum Erscheinungsdatum
  * @param homepage URL der Homepage
  * @param umsatz Umsatz
+ * @param angestellterId Die ID des Angestellten, der das Produkt verwaltet.
+ * @param angestellterNachname Der Nachname des Angestellten
+ * @param angestellterEmail Die Email des Angestellten
  */
 @SuppressWarnings("RecordComponentNumber")
 record ProduktInput(
     String name,
     String erscheinungsdatum,
     URL homepage,
-    UmsatzInput umsatz
+    UmsatzInput umsatz,
+    UUID angestellterId,
+    String angestellterNachname,
+    String angestellterEmail
+
 ) {
     /**
      * Konvertierung in ein Objekt der Entity-Klasse Produkt.
@@ -58,6 +66,9 @@ record ProduktInput(
             .erscheinungsdatum(erscheinungsdatumTmp)
             .homepage(homepage)
             .umsatz(umsatzTmp)
+            .angestellterId(angestellterId)
+            .angestellterNachname(angestellterNachname)
+            .angestellterEmail(angestellterEmail)
             .build();
     }
 }

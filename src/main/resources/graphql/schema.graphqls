@@ -28,6 +28,9 @@ type Produkt {
   erscheinungsdatum: String
   homepage: String
   umsatz: Umsatz
+  angestellterId: String
+  angestellterNachname: String
+  angestellterEmail: String
 }
 
 type Umsatz {
@@ -52,6 +55,9 @@ input ProduktInput {
   homepage: String
   "Umsatzangabe zum neuen Produkt"
   umsatz: UmsatzInput
+  angestellterId: String
+  angestellterNachname: String
+  angestellterEmail: String
 }
 
 "Umsatzeingabe für ein Produkt: Neuanlegen oder Ändern"
