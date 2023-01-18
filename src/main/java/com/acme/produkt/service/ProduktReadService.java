@@ -82,10 +82,10 @@ public class ProduktReadService {
 
         final var produkt = produktOpt.orElseThrow(NotFoundException::new);
         final var nachname = fetchAngestellterById(produkt.getAngestellterId()).nachname();
-        //produkt.setAngestellterNachname(nachname);
-        //final var email = fetchEmailById(produkt.getAngestellterId());
-        //produkt.setAngestellterEmail(email);
-        //log.debug("findById: {}", produkt);
+        produkt.setAngestellterNachname(nachname);
+        final var email = fetchEmailById(produkt.getAngestellterId());
+        produkt.setAngestellterEmail(email);
+        log.debug("findById: {}", produkt);
         return produkt;
     }
 
