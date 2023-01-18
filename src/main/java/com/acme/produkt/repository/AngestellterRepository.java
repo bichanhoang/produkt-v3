@@ -57,7 +57,6 @@ public class AngestellterRepository {
             log.error("findById: WebClientResponseException.NotFound");
             return Optional.empty();
         } catch (final WebClientException ex) {
-            // WebClientRequestException oder WebClientResponseException (z.B. ServiceUnavailable)
             log.error("findById: {}", ex.getClass().getSimpleName());
             throw new AngestellterServiceException(ex);
         }
