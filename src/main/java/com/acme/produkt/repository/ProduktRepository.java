@@ -35,12 +35,11 @@ import java.util.UUID;
  */
 @Repository
 public interface ProduktRepository extends JpaRepository<Produkt, UUID>, JpaSpecificationExecutor<Produkt> {
-    @EntityGraph(attributePaths = {"adresse", "interessen"})
-
+    @EntityGraph
     @Override
     List<Produkt> findAll();
 
-    @EntityGraph(attributePaths = {"adresse", "interessen"})
+    @EntityGraph
     @Override
     Optional<Produkt> findById(UUID id);
 
@@ -58,8 +57,6 @@ public interface ProduktRepository extends JpaRepository<Produkt, UUID>, JpaSpec
         """)
     @EntityGraph
     Collection<Produkt> findByName(CharSequence name);
-    // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#appendix.query.method.subject
-    // Collection<Produkt> findByNameContainingIgnoreCaseOrderByIdAsc(CharSequence name);
 
     /**
      * Abfrage, welche Namen es zu einem Präfix gibt.

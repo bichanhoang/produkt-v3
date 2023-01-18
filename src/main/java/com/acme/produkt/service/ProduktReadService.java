@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
 /**
  * Anwendungslogik für Produkt.
  * <img src="../../../../../asciidoc/ProduktReadService.svg" alt="Klassendiagramm">
